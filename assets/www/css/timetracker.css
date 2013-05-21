@@ -13,6 +13,8 @@ ol{
     width:100%;
     background-color: #aaaaaa;
     padding: 0px;
+    -webkit-border-radius:8px;
+    padding: 2px 2px 2px 2px;
 }
 
 ol li{
@@ -21,9 +23,10 @@ ol li{
     background-color: #dddddd;
     color:black;
     font-weight: bold;
-    padding:10px 10px 10px 10px;
+    padding:15px 10px 15px 10px;
     margin: 4px 0px 4px 0px;
     cursor: pointer;
+    -webkit-border-radius: 8px;
 }
 
 ol li a{
@@ -48,4 +51,8 @@ div#doAddTask{
 li#addTask input, li#addTask select{
     width:100%;
     margin: 4px 0px 4px 0px;
+}
+
+.menu{
+    margin:10px 0px 4px 0px;
 }
