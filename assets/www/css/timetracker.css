@@ -1,0 +1,51 @@
+
+body{
+    background-color: black;
+    color:white;
+}
+
+.timetracker{
+    margin: 10px;
+}
+
+ol{
+    list-style: none;
+    width:100%;
+    background-color: #aaaaaa;
+    padding: 0px;
+}
+
+ol li{
+    display: block;
+    border: solid 1 px #444444;
+    background-color: #dddddd;
+    color:black;
+    font-weight: bold;
+    padding:10px 10px 10px 10px;
+    margin: 4px 0px 4px 0px;
+    cursor: pointer;
+}
+
+ol li a{
+    color:black;
+}
+
+.activeTask {
+    background-color:green;
+}
+
+a {
+    color:white;
+    text-decoration: none;
+}
+
+div#doAddTask{
+    width:100%;
+    padding:10px 10px 10px 10px;
+    margin: 4px 0px 4px 0px;
+}
+
+li#addTask input, li#addTask select{
+    width:100%;
+    margin: 4px 0px 4px 0px;
+}
