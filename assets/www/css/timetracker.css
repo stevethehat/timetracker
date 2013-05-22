@@ -14,11 +14,10 @@ ol{
     background-color: #aaaaaa;
     padding: 0px;
     -webkit-border-radius:8px;
-    padding: 2px 2px 2px 2px;
+    padding: 2px 4px 2px 4px;
 }
 
 ol li{
-    display: block;
     border: solid 1 px #444444;
     background-color: #dddddd;
     color:black;
@@ -35,6 +34,7 @@ ol li a{
 
 .activeTask {
     background-color:green;
+    color:white;
 }
 
 a {
