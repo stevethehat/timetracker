@@ -48,9 +48,13 @@ div#doAddTask{
     margin: 4px 0px 4px 0px;
 }
 
+#addTask{
+    margin-top: 10px;
+}
+
 li#addTask input, li#addTask select{
     width:100%;
-    margin: 4px 0px 4px 0px;
+    margin:4px 0px 4px 0px;
 }
 
 .menu{
