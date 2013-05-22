@@ -107,6 +107,7 @@
             var taskList = $('#taskList');
             var newTask = $('<li>' + taskName + '</li>').prependTo(taskList);
             newTask.data('taskID', taskID);
+            newTask.data('taskName', taskName)
 
             newTask.click(
                 function(){
