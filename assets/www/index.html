@@ -28,7 +28,7 @@
     </head>
     <body>
         <div class="timetracker">
-            <h1>Time Tracker</h1>
+            <h1>Time Tracker v0.1.1</h1>
             <section>
                 <ol id="taskList">
                     <li class="menu">
@@ -47,19 +47,44 @@
                 </ol>
             </section>
         </div>
-        <script type="text/javascript" src="cordova-2.6.0.js"></script>
+        <script type="text/javascript" src="cordova-2.7.0.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        <!--<script type="text/javascript" src="js/SQLitePlugin.js"></script>-->
         <script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
+        <script type="text/javascript" src="js/jgestures.min.js"></script>
         <script type="text/javascript" src="js/timetracker.js"></script>
         <script type="text/javascript">
             app.initialize();
 
+            // Cordova is ready
+            function onDeviceReady() {
+                console.log('device ready');
+                console.log(openDatabase);
+                //console.log(DroidDB_openDatabase);      
+                //alert('device ready');
+                //navigator.openDatabase = window.openDatabase = DroidDB_openDatabase;
+                //window.droiddb = new DroidDB();
+                console.log('start timetracker');
+                var timeTracker = new TimeTracker();
+            }
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+            /*
             $(
                 function(){
+                    document.addEventListener("deviceready", onDeviceReady, false);
+                }
+            );
+            */
+            /*
+            $(
+                function(){
+                    //window.openDatabase = window.sqlitePlugin.openDatabase;
                     console.log('start timetracker');
                     var timeTracker = new TimeTracker();
                 }
             );
+*/
         </script>
     </body>
 </html>

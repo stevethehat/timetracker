@@ -9,7 +9,7 @@
             var self = this;           
             var db = self.database();
 
-            $('#doAddTask').click(
+            $('#doAddTask').on('click touch',
                 function(){
                     console.log('addTaskClick');
                     self.addTask();
@@ -109,7 +109,7 @@
             newTask.data('taskID', taskID);
             newTask.data('taskName', taskName)
 
-            newTask.click(
+            newTask.on('click touch',
                 function(){
                     self.taskClick(newTask);
                 }
@@ -120,7 +120,9 @@
 
         TimeTracker.prototype.database = function(){
             var self = this;
-            return(openDatabase('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024));
+            console.log('database')
+            console.log(window.sqlitePlugin);
+            return(window.openDatabase('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024));
         }
 
         TimeTracker.prototype.initTables = function(transaction){

@@ -22,7 +22,7 @@ ol li{
     background-color: #dddddd;
     color:black;
     font-weight: bold;
-    padding:15px 10px 15px 10px;
+    padding:30px 10px 30px 10px;
     margin: 4px 0px 4px 0px;
     cursor: pointer;
     -webkit-border-radius: 8px;
@@ -43,13 +43,15 @@ a {
 }
 
 div#doAddTask{
-    width:100%;
-    padding:10px 10px 10px 10px;
-    margin: 4px 0px 4px 0px;
+    margin-top:10px;
+    padding:20px 10px 20px 10px;
+    /*margin: 4px 0px 4px 0px;*/
+    background-color: #aaaaaa;
+    -webkit-border-radius: 8px;
 }
 
 #addTask{
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 li#addTask input, li#addTask select{
@@ -58,5 +60,5 @@ li#addTask input, li#addTask select{
 }
 
 .menu{
-    margin:10px 0px 4px 0px;
+    margin:20px 0px 4px 0px;
 }
