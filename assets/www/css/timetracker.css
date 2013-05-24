@@ -2,6 +2,11 @@
 body{
     background-color: black;
     color:white;
+    font-size: 200%;
+}
+
+h1 {
+    font-size: 100%;
 }
 
 .timetracker{
@@ -22,7 +27,7 @@ ol li{
     background-color: #dddddd;
     color:black;
     font-weight: bold;
-    padding:30px 10px 30px 10px;
+    padding:15px 10px 15px 10px;
     margin: 4px 0px 4px 0px;
     cursor: pointer;
     -webkit-border-radius: 8px;

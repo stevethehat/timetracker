@@ -6,20 +6,38 @@
         };
 
         TimeTracker.prototype.init = function () {
-            var self = this;           
-            var db = self.database();
+            var self = this;         
+            self.ui = new UI();  
+            self.db = self.database();
 
+            /*
             $('#doAddTask').on('click touch',
                 function(){
                     console.log('addTaskClick');
                     self.addTask();
                 }
             );
-
-            db.transaction(function (transaction) {
+            */
+            self.db.transaction(function (transaction) {
                 console.log('init');
                 self.initTables(transaction);
-                self.showRecent(transaction);
+            });
+           self.showHome();
+        };
+
+        TimeTracker.prototype.clearPages = function(){
+            var self = this;
+            self.home = null;
+        };
+
+        TimeTracker.prototype.showHome = function(transaction){
+            var self = this;
+            self.home = new Object();
+            self.home.tasks = self.ui.addSection( { 'id': 'home' });
+            self.home.recentTasks = self.ui.addList( { 'id': 'recentTasks' }, self.home.tasks);
+           
+            self.db.transaction(function (transaction) {
+                self.showRecent(transaction, self.home.recentTasks);
                 self.populateClients(transaction);
             });
         };
@@ -34,17 +52,23 @@
             addClient(-1, 'No Client');
         }
 
-        TimeTracker.prototype.showRecent = function(transaction){
+        TimeTracker.prototype.showRecent = function(transaction, list){
             var self = this;
             console.log('showRecent');
-            transaction.executeSql('SELECT * FROM tasks', [], 
+            transaction.executeSql('SELECT * FROM tasks limit 3', [], 
                 function (transaction, results) {
                     var len = results.rows.length, i;
                     for (i = 0; i < len; i++){       
                         var task = results.rows.item(i);   
                         console.log(task);     
-                        self.addTaskToList(task.id, task.title);                  
+                        self.addTaskToList(task.id, task.title, list);                  
                     }
+                    console.log(list);
+
+                    var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '' }, list);
+                    newTask.text = '';
+                    var newTaskName = $('<input tupe="text"/>', { 'id': 'newTaskName' }).appendTo(newTask);
+                    console.log(newTaskName);
                 }
             );
         }
@@ -53,22 +77,24 @@
             var self = this;
             console.log('addTask');
             var taskName = $('#newTaskName').val();
-            $('#newTaskName').val('');
 
-            var taskID = 1;
+            if(taskName != ''){
+                $('#newTaskName').val('');
 
-            var db = self.database();
-            db.transaction(
-                function(transaction){
-                    transaction.executeSql('insert into tasks (title) values (?)', [taskName],
-                        function(transaction, results){
-                            console.log('addedTask')
-                            console.log(results);
-                            self.taskClick(self.addTaskToList(results.insertId, taskName));
-                        }
-                    )
-                }
-            );
+                var taskID = 1;
+
+                self.db.transaction(
+                    function(transaction){
+                        transaction.executeSql('insert into tasks (title) values (?)', [taskName],
+                            function(transaction, results){
+                                console.log('addedTask')
+                                console.log(results);
+                                self.taskClick(self.addTaskToList(results.insertId, taskName));
+                            }
+                        )
+                    }
+                );
+            }
         }
 
         TimeTracker.prototype.taskClick = function(li){
@@ -101,21 +127,25 @@
             );
         }
 
-        TimeTracker.prototype.addTaskToList = function(taskID, taskName){
+        TimeTracker.prototype.addTaskToList = function(taskID, taskName, list){
             var self = this;
             console.log('addTaskToList ' + taskID + ' ' + taskName);
-            var taskList = $('#taskList');
-            var newTask = $('<li>' + taskName + '</li>').prependTo(taskList);
-            newTask.data('taskID', taskID);
-            newTask.data('taskName', taskName)
 
-            newTask.on('click touch',
-                function(){
-                    self.taskClick(newTask);
-                }
+            var newOption = self.ui.addOption(
+                {
+                    'text': taskName,
+                    'data': {
+                        'taskID': taskID,
+                        'taskName': taskName
+                    },
+                    'events': {
+                        'click touch': function(option){
+                            self.taskClick(option);
+                        }
+                    }
+                }, list
             );
-
-            return(newTask);
+            return(newOption);
         }
 
         TimeTracker.prototype.database = function(){
