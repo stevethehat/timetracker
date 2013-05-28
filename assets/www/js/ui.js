@@ -29,6 +29,25 @@
         UI.prototype.addOption = function(definition, list){
             var self = this;
             var newTask = $('<li>' + definition.text + '</li>').appendTo(list);
+
+            if(definition.data){
+                $.each(_.keys(definition.data),
+                    function(index, item){
+                        console.log('add data "' + item + '" = "' + definition.data[item] + '"');
+                        newTask.data(item, definition.data[item]);
+                    }
+                );
+            }
+
+            if(definition.events){
+                $.each(_.keys(definition.events),
+                    function(index, event){
+                        console.log('add event "' + event + '" = "' + definition.events[event] + '"');
+                        newTask.on(event, definition.events[event]);
+                    }
+                );
+            }
+
             //newTask.data('taskID', taskID);
             //newTask.data('taskName', taskName)
 

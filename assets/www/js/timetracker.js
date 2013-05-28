@@ -68,18 +68,30 @@
                     var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '' }, list);
                     newTask.text = '';
                     var newTaskName = $('<input tupe="text"/>', { 'id': 'newTaskName' }).appendTo(newTask);
+                    newTaskName.bind('keyup',
+                        function(ev){
+                            if(ev.keyCode == 13){
+                                //alert('add event');
+                                self.addTask(newTaskName, list);
+                            }
+                        }
+                    );
                     console.log(newTaskName);
                 }
             );
         }
 
-        TimeTracker.prototype.addTask = function(){
+        TimeTracker.prototype.addTask = function(newTaskName, list){
             var self = this;
             console.log('addTask');
-            var taskName = $('#newTaskName').val();
+            //var newTaskName = $('#newTaskName');
+            console.log(newTaskName);
+            var taskName = newTaskName.val();
 
             if(taskName != ''){
-                $('#newTaskName').val('');
+                newTaskName.val('');
+
+                console.log('addTask "' + taskName + '"');
 
                 var taskID = 1;
 
@@ -89,7 +101,7 @@
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
-                                self.taskClick(self.addTaskToList(results.insertId, taskName));
+                                self.taskClick(self.addTaskToList(results.insertId, taskName, list));
                             }
                         )
                     }
@@ -107,8 +119,6 @@
             $('#taskList li').removeClass('activeTask');
             li.addClass('activeTask');
             //li.css('background-color', 'green');
-
-
         }
 
         TimeTracker.prototype.addEvent = function(taskID){
