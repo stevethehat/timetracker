@@ -55,7 +55,9 @@
         TimeTracker.prototype.showRecent = function(transaction, list){
             var self = this;
             console.log('showRecent');
-            transaction.executeSql('SELECT * FROM tasks limit 3', [], 
+            var lookupSql = 'SELECT * FROM tasks';
+            //var lookupSql = 'SELECT * FROM tasks limit 3';
+            transaction.executeSql(lookupSql, [], 
                 function (transaction, results) {
                     var len = results.rows.length, i;
                     for (i = 0; i < len; i++){       
@@ -116,7 +118,8 @@
             var taskID = li.data('taskID');
 
             self.addEvent(taskID);
-            $('#taskList li').removeClass('activeTask');
+            li.siblings().removeClass('activeTask');
+            //$('#taskList li').removeClass('activeTask');
             li.addClass('activeTask');
             //li.css('background-color', 'green');
         }
@@ -150,7 +153,7 @@
                     },
                     'events': {
                         'click touch': function(option){
-                            self.taskClick(option);
+                            self.taskClick(newOption);
                         }
                     }
                 }, list
