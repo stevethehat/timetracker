@@ -72,7 +72,7 @@
         TimeTracker.prototype.showRecent = function(transaction, list){
             var self = this;
             console.log('showRecent');
-            var lookupSql = 'SELECT * FROM tasks';
+            var lookupSql = 'SELECT * FROM tasks order by latestevent desc';
             //var lookupSql = 'SELECT * FROM tasks limit 3';
             transaction.executeSql(lookupSql, [], 
                 function (transaction, results) {
@@ -153,7 +153,7 @@
                             console.log('addedEvent')
                             console.log(results);
 
-                            transaction.executeSql('update tasks set latestevent=? where id=?', [taskID, results.insertId])
+                            transaction.executeSql('update tasks set latestevent=? where id=?', [results.insertId, taskID])
                         }
                     );
                 }
@@ -199,7 +199,28 @@
         }
 
         TimeTracker.prototype.report = function(){
-            
+            var self = this;
+            var db = self.database();
+            db.transaction(
+                function(transaction){
+                    console.log('tasks');
+                    self.logTable(transaction, 'tasks');
+                    console.log('events');
+                    self.logTable(transaction, 'events');
+                }
+            );
+        }
+
+        TimeTracker.prototype.logTable = function(transaction, tableName){
+            transaction.executeSql('select * from ' + tableName, [],
+                function(transaction, results){
+                    var len = results.rows.length, i;
+                    for (i = 0; i < len; i++){       
+                        var row = results.rows.item(i);   
+                        console.log(row);     
+                    }                    
+                }
+            );
         }
 
         TimeTracker.prototype.reset = function(){
