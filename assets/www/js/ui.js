@@ -28,7 +28,12 @@
 
         UI.prototype.addOption = function(definition, list){
             var self = this;
-            var newTask = $('<li>' + definition.text + '</li>').appendTo(list);
+            var newTask = null;
+            if(definition.position == 'top'){
+                newTask = $('<li>' + definition.text + '</li>').prependTo(list);
+            } else {
+                newTask = $('<li>' + definition.text + '</li>').appendTo(list);
+            }
 
             if(definition.data){
                 $.each(_.keys(definition.data),
@@ -93,6 +98,29 @@
         UI.prototype.alert = function(message){
             var self = this;
 
+        }
+
+        UI.prototype.menu = function(definition){
+            var self = this;
+
+            console.log('menu');
+
+            var body = $('body');
+            var menu = $('<div></div>', { 'id': 'menu' }).prependTo(body);
+            var menuList = $('<ol></ol>').appendTo(menu); 
+
+            $.each(definition.items,
+                function(index, item){
+                    console.log('adding menu item ' + item['text']);
+                    var newItem = $('<li>' + item.text + '</li>').appendTo(menuList);
+                    newItem.on('click',
+                        function(){
+                            item.action();
+                            menu.remove();
+                        }
+                    );
+                }
+            );
         }
 
 

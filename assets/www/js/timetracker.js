@@ -6,7 +6,8 @@
         };
 
         TimeTracker.prototype.init = function () {
-            var self = this;         
+            var self = this;     
+            //self.reset();    
             self.ui = new UI();  
             self.db = self.database();
 
@@ -18,6 +19,22 @@
                 }
             );
             */
+            var menuDefinition = {
+                'items':[
+                    { 'text': 'Manage', 'action': function(){ self.manage(); } },
+                    { 'text': 'Report', 'action': function(){ self.report(); } },
+                    { 'text': 'Reset', 'action': function(){ self.reset(); location.reload(); } }
+                ]
+            }
+
+            $('#menuButton').on('click',
+                function(){
+                    console.log('menu button click');
+                    self.ui.menu(menuDefinition);
+                    //alert('menu');
+                }
+            );
+
             self.db.transaction(function (transaction) {
                 console.log('init');
                 self.initTables(transaction);
@@ -63,11 +80,11 @@
                     for (i = 0; i < len; i++){       
                         var task = results.rows.item(i);   
                         console.log(task);     
-                        self.addTaskToList(task.id, task.title, list);                  
+                        self.addTaskToList(task.id, task.title, list, 'bottom');                  
                     }
                     console.log(list);
 
-                    var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '' }, list);
+                    var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '', 'position': 'bottom' }, list);
                     newTask.text = '';
                     var newTaskName = $('<input tupe="text"/>', { 'id': 'newTaskName' }).appendTo(newTask);
                     newTaskName.bind('keyup',
@@ -103,7 +120,7 @@
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
-                                self.taskClick(self.addTaskToList(results.insertId, taskName, list));
+                                self.taskClick(self.addTaskToList(results.insertId, taskName, list, 'top'));
                             }
                         )
                     }
@@ -122,6 +139,7 @@
             //$('#taskList li').removeClass('activeTask');
             li.addClass('activeTask');
             //li.css('background-color', 'green');
+            //
         }
 
         TimeTracker.prototype.addEvent = function(taskID){
@@ -134,19 +152,22 @@
                         function(transaction, results){
                             console.log('addedEvent')
                             console.log(results);
+
+                            transaction.executeSql('update tasks set latestevent=? where id=?', [taskID, results.insertId])
                         }
-                    )
+                    );
                 }
             );
         }
 
-        TimeTracker.prototype.addTaskToList = function(taskID, taskName, list){
+        TimeTracker.prototype.addTaskToList = function(taskID, taskName, list, position){
             var self = this;
             console.log('addTaskToList ' + taskID + ' ' + taskName);
 
             var newOption = self.ui.addOption(
                 {
                     'text': taskName,
+                    'position': position,
                     'data': {
                         'taskID': taskID,
                         'taskName': taskName
@@ -164,15 +185,22 @@
         TimeTracker.prototype.database = function(){
             var self = this;
             console.log('database')
-            console.log(window.sqlitePlugin);
             return(window.openDatabase('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024));
         }
 
         TimeTracker.prototype.initTables = function(transaction){
             var self = this;
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, latestevent)');
             transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, datetime)');
         }   
+
+        TimeTracker.prototype.manage = function(){
+
+        }
+
+        TimeTracker.prototype.report = function(){
+            
+        }
 
         TimeTracker.prototype.reset = function(){
             var self = this;

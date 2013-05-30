@@ -80,3 +80,31 @@ li#addTask input, li#addTask select{
 #timetracker{
     margin-top: 62px;
 }
+
+#menuButton{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+#menu{
+    position:absolute;
+    top: 62px;
+    left:10px;
+    width: 300px;
+    background-color: black;
+}
+
+#menu ol{
+    padding: 4;
+    margin: 0;
+}
+
+#menu ol li{
+    background-color: black;
+    color:white;
+
+}
