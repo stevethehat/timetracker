@@ -7,7 +7,7 @@
 
         TimeTracker.prototype.init = function () {
             var self = this;     
-            //self.reset();    
+            self.reset();    
             self.ui = new UI();  
             self.db = self.database();
 
@@ -23,6 +23,7 @@
                 'items':[
                     { 'text': 'Manage', 'action': function(){ self.manage(); } },
                     { 'text': 'Report', 'action': function(){ self.report(); } },
+                    { 'text': 'Upload', 'action': function(){ self.upload(); } },
                     { 'text': 'Reset', 'action': function(){ self.reset(); location.reload(); } }
                 ]
             }
@@ -219,6 +220,27 @@
                         var row = results.rows.item(i);   
                         console.log(row);     
                     }                    
+                }
+            );
+        }
+
+        TimeTracker.prototype.upload = function(){
+            var self = this;
+            console.log('upload');
+
+            var dropBoxClient = new Dropbox.Client(
+                {
+                    key:'cud3u6sk7p9zdmy', secret: 'sk7onlowc8pdtu9'
+                }
+            );
+            dropBoxClient.authDriver(new Dropbox.Drivers.Redirect());
+            dropBoxClient.authenticate(
+                function(error, client){
+                    if(error){
+                        console.log('dropbox authentication error');
+                    } else {
+                        console.log('dropbox connected')
+                    }
                 }
             );
         }
