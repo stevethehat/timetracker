@@ -25,7 +25,19 @@
                     { 'text': 'Manage', 'action': function(){ self.manage(); } },
                     { 'text': 'Report', 'action': function(){ self.report(); } },
                     { 'text': 'Upload', 'action': function(){ self.upload(); } },
-                    { 'text': 'Reset', 'action': function(){ self.reset(); location.reload(); } }
+                    { 'text': 'Reset', 'action': 
+                        function(){ 
+                            self.ui.confirm('Are you sure you want to reset? This will delete all tasks & events.', 'Reset', 
+                                function(ok){
+                                    if(ok){
+                                        self.reset(); location.reload(); 
+                                    } else {
+
+                                    }
+                                }
+                            );
+                        } 
+                    }
                 ],
                 'position':{
                     'use': 'top',

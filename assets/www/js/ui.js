@@ -105,6 +105,24 @@
             }
         }
 
+        UI.prototype.confirm = function(message, title, callback){
+            var self = this;
+
+            if(self.isApp()){
+                navigator.notification.confirm(message,
+                    function(button){
+                        if(button == 1){
+                            callback(true);
+                        } else {
+                            callback(false);
+                        }
+                    }, title
+                );
+            } else {
+                callback(false);
+            }
+        }
+
         UI.prototype.menu = function(e, definition){
             var self = this;
             e.stopPropagation();
