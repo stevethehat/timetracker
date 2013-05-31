@@ -289,16 +289,16 @@
                                                     self.uploadFile(dropBoxClient, 'timetracker-events.csv', contents,
                                                         function(ok){
                                                             if(ok){
-                                                                self.ui.alert('Uplad to dropbox complete.');
+                                                                self.ui.alert('Upload to dropbox complete.', 'Upload');
                                                             } else {
-                                                                self.ui.alert('Upload to dropbox error.');
+                                                                self.ui.alert('Upload to dropbox error.', 'Upload');
                                                             }
                                                         }
                                                     );
                                                 }
                                             );
                                         } else {
-                                            self.ui.alert('Upload to dropbox error.');
+                                            self.ui.alert('Upload to dropbox error.', 'Upload');
                                         }
                                     }   
                                 );     

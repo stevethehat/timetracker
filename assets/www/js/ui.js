@@ -95,10 +95,14 @@
             return(self.isRunningAsApp);
         }
 
-        UI.prototype.alert = function(message){
+        UI.prototype.alert = function(message, title){
             var self = this;
 
-            alert(message);
+            if(self.isApp()){
+                navigator.notification.alert(message, function(){}, title);
+            } else {
+                alert(message);
+            }
         }
 
         UI.prototype.menu = function(e, definition){
