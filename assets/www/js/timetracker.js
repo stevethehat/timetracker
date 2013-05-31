@@ -7,7 +7,7 @@
 
         TimeTracker.prototype.init = function () {
             var self = this;     
-            self.reset();    
+            //self.reset();    
             self.ui = new UI();  
             self.db = self.database();
 
@@ -21,18 +21,32 @@
             */
             var menuDefinition = {
                 'items':[
+                    { 'text': 'Edit Task', 'action': function(){ alert('edit task'); } },
                     { 'text': 'Manage', 'action': function(){ self.manage(); } },
                     { 'text': 'Report', 'action': function(){ self.report(); } },
                     { 'text': 'Upload', 'action': function(){ self.upload(); } },
                     { 'text': 'Reset', 'action': function(){ self.reset(); location.reload(); } }
-                ]
+                ],
+                'position':{
+                    'use': 'top',
+                    'top':'62px',
+                    'bottom': '2px'
+                }
             }
 
             $('#menuButton').on('click',
-                function(){
+                function(e){
                     console.log('menu button click');
-                    self.ui.menu(menuDefinition);
+                    menuDefinition.position.use = 'top';
+                    self.ui.menu(e, menuDefinition);
                     //alert('menu');
+                }
+            );
+
+            document.addEventListener('menubutton',
+                function(e){
+                    menuDefinition.position.use = 'bottom';
+                    self.ui.menu(e, menuDefinition);
                 }
             );
 
@@ -51,8 +65,8 @@
         TimeTracker.prototype.showHome = function(transaction){
             var self = this;
             self.home = new Object();
-            self.home.tasks = self.ui.addSection( { 'id': 'home' });
-            self.home.recentTasks = self.ui.addList( { 'id': 'recentTasks' }, self.home.tasks);
+            self.home.tasks = self.ui.addSection( { 'id': 'home', 'class': 'home' });
+            self.home.recentTasks = self.ui.addList( { 'id': 'recentTasks', 'class': 'taskList' }, self.home.tasks);
            
             self.db.transaction(function (transaction) {
                 self.showRecent(transaction, self.home.recentTasks);
@@ -87,7 +101,7 @@
 
                     var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '', 'position': 'bottom' }, list);
                     newTask.text = '';
-                    var newTaskName = $('<input tupe="text"/>', { 'id': 'newTaskName' }).appendTo(newTask);
+                    var newTaskName = $('<input tupe="text" placeholder="New Task Name.."/>', { 'id': 'newTaskName' }).appendTo(newTask);
                     newTaskName.bind('keyup',
                         function(ev){
                             if(ev.keyCode == 13){
@@ -233,12 +247,27 @@
                     key:'cud3u6sk7p9zdmy', secret: 'sk7onlowc8pdtu9'
                 }
             );
-            dropBoxClient.authDriver(new Dropbox.Drivers.Redirect());
+            /*
+            var dropBoxClient = new Dropbox.Client(
+                {
+                    key: 'NUNWO3CaTZA=|zRN+uRPccjnp9zVnzfxeiFlfkoHaEqylxUTy9B8opw==', secret: 'sk7onlowc8pdtu9'
+                }
+            );
+            */
+            if(self.ui.isApp()){
+                console.log('using cordova dropbox driver');
+                dropBoxClient.authDriver(new Dropbox.Drivers.Cordova());
+            } else {
+                dropBoxClient.authDriver(new Dropbox.Drivers.Redirect());
+            }
             dropBoxClient.authenticate(
                 function(error, client){
                     if(error){
+                        //alert('dropbox error');
                         console.log('dropbox authentication error');
+                        console.log(error);
                     } else {
+                        //alert('dropbox connect');
                         console.log('dropbox connected')
                     }
                 }

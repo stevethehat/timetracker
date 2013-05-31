@@ -15,14 +15,14 @@
         UI.prototype.addSection = function(definition){
             var self = this;
 
-            var newSection = $('<section></section>', { 'id': definition.id }).appendTo(self.root);            
+            var newSection = $('<section></section>', { 'id': definition.id, 'class': definition.class }).appendTo(self.root);            
             return(newSection);
         };
 
         UI.prototype.addList = function(definition, section){
             var self = this;
 
-            var newList = $('<ol></ol>', { 'id': definition.id }).appendTo(section);            
+            var newList = $('<ol></ol>', { 'id': definition.id, 'class': definition.class }).appendTo(section);            
             return(newList);
         };
 
@@ -100,25 +100,41 @@
 
         }
 
-        UI.prototype.menu = function(definition){
+        UI.prototype.menu = function(e, definition){
             var self = this;
-
+            e.stopPropagation();
             console.log('menu');
 
             var body = $('body');
             var menu = $('<div></div>', { 'id': 'menu' }).prependTo(body);
+
+            menu.css(definition.position.use, definition.position[definition.position.use]);
             var menuList = $('<ol></ol>').appendTo(menu); 
 
             $.each(definition.items,
                 function(index, item){
                     console.log('adding menu item ' + item['text']);
-                    var newItem = $('<li>' + item.text + '</li>').appendTo(menuList);
+                    var newItem = null;
+
+                    if(index == 0){
+                        newItem = $('<li class="first">' + item.text + '</li>').appendTo(menuList);
+                    } else {
+                        newItem = $('<li>' + item.text + '</li>').appendTo(menuList);
+                    }
+                    
                     newItem.on('click',
-                        function(){
+                        function(e){
                             item.action();
                             menu.remove();
+                            e.stopPropagation();
                         }
                     );
+                }
+            );
+            $(document).on('click',
+                function(){
+                    console.log('close menu');
+                    menu.remove();
                 }
             );
         }
