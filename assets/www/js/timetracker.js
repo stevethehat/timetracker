@@ -11,19 +11,10 @@
             self.ui = new UI();  
             self.db = self.database();
 
-            /*
-            $('#doAddTask').on('click touch',
-                function(){
-                    console.log('addTaskClick');
-                    self.addTask();
-                }
-            );
-            */
             var menuDefinition = {
                 'items':[
-                    { 'text': 'Edit Task', 'action': function(){ alert('edit task'); } },
                     { 'text': 'Manage', 'action': function(){ self.manage(); } },
-                    { 'text': 'Report', 'action': function(){ self.report(); } },
+                    { 'text': 'Preferences', 'action': function(){ self.preferences(); } },
                     { 'text': 'Upload', 'action': function(){ self.upload(); } },
                     { 'text': 'Reset', 'action': 
                         function(){ 
@@ -382,6 +373,10 @@
                     transaction.executeSql('drop table events', []);
                 }
             );            
+        }
+
+        TimeTracker.prototype.preferences = function(){
+            
         }
     } 
 )(jQuery);
