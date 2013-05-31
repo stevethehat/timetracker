@@ -13,7 +13,7 @@ h1 {
     margin: 10px;
 }
 
-ol{
+ol.taskList{
     list-style: none;
     width:100%;
     background-color: #aaaaaa;
@@ -22,7 +22,7 @@ ol{
     padding: 2px 4px 2px 4px;
 }
 
-ol li{
+ol.taskList li{
     border: solid 1 px #444444;
     background-color: #dddddd;
     color:black;
@@ -33,11 +33,11 @@ ol li{
     -webkit-border-radius: 8px;
 }
 
-ol li a{
+ol.taskList li a{
     color:black;
 }
 
-.activeTask {
+ol.taskList .activeTask {
     background-color:green;
     color:white;
 }
@@ -91,20 +91,27 @@ li#addTask input, li#addTask select{
 }
 
 #menu{
-    position:absolute;
-    top: 62px;
-    left:10px;
+    position:fixed;
+    right:10px;
     width: 300px;
     background-color: black;
 }
 
 #menu ol{
-    padding: 4;
+    list-style: none;
+    padding: 0;
     margin: 0;
 }
 
 #menu ol li{
+    margin: 0px;
+    padding: 14px 10px 14px 10px;
     background-color: black;
     color:white;
+    border-top: solid 1px white;
+    font-weight: normal;
+}
 
+#menu ol li.first{
+    border-top: solid 1px black;
 }
