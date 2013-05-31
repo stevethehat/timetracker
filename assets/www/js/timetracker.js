@@ -163,7 +163,10 @@
 
             var timer = setInterval(
                 function(){
-                    time.text(time.data('duration') + ' min of 2 days');
+                    var duration = Number(time.data('duration')) + 1;
+                    time.data('duration', duration);
+                    console.log('update time spent');
+                    time.text(duration + ' min of 2 days');
                 }, 60000);
             //
         }
