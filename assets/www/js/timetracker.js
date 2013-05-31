@@ -151,9 +151,17 @@
 
             self.addEvent(taskID);
             li.siblings().removeClass('activeTask');
-            //$('#taskList li').removeClass('activeTask');
+            $('p.time').remove();
+            
             li.addClass('activeTask');
-            //li.css('background-color', 'green');
+            var time = $('<p class="time">0 min of 2 days</p>').appendTo(li);
+            time.data('duration', 0);
+            console.log('added timer info');
+
+            var timer = setInterval(
+                function(){
+                    time.text(time.data('duration') + ' min of 2 days');
+                }, 60000);
             //
         }
 
