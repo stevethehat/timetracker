@@ -104,7 +104,7 @@
 
                     var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '', 'position': 'bottom' }, list);
                     newTask.text = '';
-                    var newTaskName = $('<input tupe="text" placeholder="New Task Name.."/>', { 'id': 'newTaskName' }).appendTo(newTask);
+                    var newTaskName = $('<input type="text" placeholder="New Task Name.."/>', { 'id': 'newTaskName' }).appendTo(newTask);
                     newTaskName.bind('keyup',
                         function(ev){
                             if(ev.keyCode == 13){
@@ -376,7 +376,7 @@
         }
 
         TimeTracker.prototype.preferences = function(){
-            
+
         }
     } 
 )(jQuery);

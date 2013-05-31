@@ -29,10 +29,12 @@
         UI.prototype.addOption = function(definition, list){
             var self = this;
             var newTask = null;
+            var newTask = $('<li></li>', { 'id': definition.id});
+            var p = $('<p>' + definition.text + '</p>').appendTo(newTask);
             if(definition.position == 'top'){
-                newTask = $('<li><p>' + definition.text + '</p></li>').prependTo(list);
+                newTask.prependTo(list);
             } else {
-                newTask = $('<li><p>' + definition.text + '</p></li>').appendTo(list);
+                newTask.appendTo(list);
             }
 
             if(definition.data){
