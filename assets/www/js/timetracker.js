@@ -274,10 +274,87 @@
                         //alert('dropbox error');
                         console.log('dropbox authentication error');
                         console.log(error);
+                        self.ui.alert('Dropbox authentication failed.')
                     } else {
                         //alert('dropbox connect');
-                        console.log('dropbox connected')
+                        console.log('dropbox connected');
+
+                        self.dumpTable('tasks',
+                            function(contents){
+                                self.uploadFile(dropBoxClient, 'timetracker-tasks.csv', contents,
+                                    function(ok){
+                                        if(ok){
+                                            self.dumpTable('events',
+                                                function(contents){
+                                                    self.uploadFile(dropBoxClient, 'timetracker-events.csv', contents,
+                                                        function(ok){
+                                                            if(ok){
+                                                                self.ui.alert('Uplad to dropbox complete.');
+                                                            } else {
+                                                                self.ui.alert('Upload to dropbox error.');
+                                                            }
+                                                        }
+                                                    );
+                                                }
+                                            );
+                                        } else {
+                                            self.ui.alert('Upload to dropbox error.');
+                                        }
+                                    }   
+                                );     
+                            }
+                        );
                     }
+                }
+            );
+        }
+
+        TimeTracker.prototype.uploadFile = function(dropBoxClient, filename, contents, callback){
+            var self = this;
+
+            contents
+            dropBoxClient.writeFile(filename, contents,
+                function(error, stat){
+                    if(error){
+                        console.log(error);
+                        callback(false);
+                    } else {
+                        console.log(stat);
+                        callback(true);
+                    }
+                }
+            );
+        }
+
+        TimeTracker.prototype.dumpTable = function(tableName, callback){
+            var self = this;
+            var db = self.database();
+            var result = '';
+
+            console.log('dumpTable ' + tableName);
+
+            db.transaction(
+                function(transaction){
+                    transaction.executeSql('select * from ' + tableName, [],
+                        function(transaction, results){
+                            var len = results.rows.length, i;
+                            for (i = 0; i < len; i++){       
+                                var row = results.rows.item(i); 
+                                $.each(_.values(row),
+                                    function(index, value){
+                                        if(index == 0){
+                                            result = result + value;
+                                        } else {
+                                            result = result + ',' + value;
+                                        }
+                                    }
+                                );  
+                                result = result + '\n';
+                                console.log(row);     
+                            }
+                            callback(result);
+                        }
+                    );
                 }
             );
         }

@@ -98,6 +98,7 @@
         UI.prototype.alert = function(message){
             var self = this;
 
+            alert(message);
         }
 
         UI.prototype.menu = function(e, definition){
