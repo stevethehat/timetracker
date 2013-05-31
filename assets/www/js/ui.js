@@ -30,9 +30,9 @@
             var self = this;
             var newTask = null;
             if(definition.position == 'top'){
-                newTask = $('<li>' + definition.text + '</li>').prependTo(list);
+                newTask = $('<li><p>' + definition.text + '</p></li>').prependTo(list);
             } else {
-                newTask = $('<li>' + definition.text + '</li>').appendTo(list);
+                newTask = $('<li><p>' + definition.text + '</p></li>').appendTo(list);
             }
 
             if(definition.data){
