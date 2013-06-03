@@ -163,31 +163,47 @@
             console.log('taskClick');
             console.log(li);
             var taskID = li.data('taskID');
-
-            self.addEvent(taskID);
-            li.siblings().removeClass('activeTask');
-            $('p.time').remove();
-            
-            li.addClass('activeTask');
-            var time = $('<p class="time">0 min of 2 days</p>').appendTo(li);
-            time.data('duration', 0);
-            console.log('added timer info');
-
-            var timer = setInterval(
-                function(){
-                    var duration = Number(time.data('duration')) + 1;
-                    time.data('duration', duration);
-                    console.log('update time spent');
-                    time.text(duration + ' min of 2 days');
-                }, 60000);
-            //
-        }
-
-        TimeTracker.prototype.addEvent = function(taskID){
-            var self = this;
-            console.log('addEvent ' + taskID);
             var now = new moment();
             var nowUnix = now.unix();
+
+            self.addEvent(taskID, nowUnix);
+
+            var db = self.database();
+            db.transaction(
+                function(transaction){
+                    transaction.executeSql('select duration from tasks where id=?', [taskID],
+                        function(transaction, results){
+                            var taskDuration = Number(results.rows.item(0).duration);
+
+                            li.siblings().removeClass('activeTask');
+                            $('p.time').remove();
+                            
+                            li.addClass('activeTask');
+
+                            var time = $('<p class="time">' + moment.duration(taskDuration).humanize() + '</p>').appendTo(li);
+                            time.data('starttime', nowUnix);
+                            time.data('taskduration', taskDuration)
+                            console.log('added timer info');
+
+                            var timer = setInterval(
+                                function(){
+                                    var now = moment();
+                                    var eventSeconds = now.unix() - Number(time.data('starttime'));
+                                    var eventDuration = moment.duration(eventSeconds, 'seconds');
+                                    var taskDuration = Number(time.data('taskduration')) + eventSeconds;
+                                    console.log('update time spent');
+                                    time.text(eventDuration.humanize() + ' of ' + moment.duration(eventDuration, 'seconds').humanize());
+                                }, 10000);
+                            //
+                        }
+                    );
+                }
+            );
+        }
+
+        TimeTracker.prototype.addEvent = function(taskID, nowUnix){
+            var self = this;
+            console.log('addEvent ' + taskID);
             var db = self.database();
             db.transaction(
                 function(transaction){
