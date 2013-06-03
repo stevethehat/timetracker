@@ -142,15 +142,15 @@
 
                 console.log('addTask "' + taskName + '"');
 
-                var taskID = 1;
+                var taskID = self.generateGUID();
 
                 self.db.transaction(
                     function(transaction){
-                        transaction.executeSql('insert into tasks (title, duration) values (?, 0)', [taskName],
+                        transaction.executeSql('insert into tasks (id, title, duration) values (?, ?, 0)', [taskID, taskName],
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
-                                self.taskClick(self.addTaskToList(results.insertId, taskName, list, 'top'));
+                                self.taskClick(self.addTaskToList(taskID, taskName, list, 'top'));
                             }
                         )
                     }
@@ -191,14 +191,14 @@
             var db = self.database();
             db.transaction(
                 function(transaction){
-                    transaction.executeSql('insert into events (taskid, starttime) values (?, ?)', [taskID, nowUnix],
+                    transaction.executeSql('insert into events (id, taskid, starttime) values (?, ?, ?)', [self.generateGUID(), taskID, nowUnix],
                         function(transaction, results){
                             console.log('addedEvent')
                             console.log(results);
 
                             transaction.executeSql('update tasks set laststarttime=? where id=?', [nowUnix, taskID],
                                 function(transaction, results){
-                                    transaction.executeSql('select * from events order by id desc', [],
+                                    transaction.executeSql('select * from events order by starttime desc', [],
                                         function(transaction, results){
                                             // get last event
                                             if(results.rows.length >= 2){
@@ -269,8 +269,10 @@
 
         TimeTracker.prototype.initTables = function(transaction){
             var self = this;
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
+            //transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
+            //transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id, title, laststarttime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id, taskid, starttime, endtime, duration)');
         }   
 
         TimeTracker.prototype.manage = function(){
@@ -430,6 +432,16 @@
 
         TimeTracker.prototype.preferences = function(){
 
+        }
+
+        TimeTracker.prototype.generateGUID = function(){
+            var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, 
+                function(c) {
+                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                    return v.toString(16);
+                }
+            );     
+            return guid;
         }
     } 
 )(jQuery);
