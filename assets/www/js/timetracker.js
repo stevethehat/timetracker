@@ -344,12 +344,10 @@
             dropBoxClient.authenticate(
                 function(error, client){
                     if(error){
-                        //alert('dropbox error');
                         console.log('dropbox authentication error');
                         console.log(error);
                         self.ui.alert('Dropbox authentication failed.')
                     } else {
-                        //alert('dropbox connect');
                         console.log('dropbox connected');
                         self.createReport(
                             function(contents){
@@ -372,7 +370,6 @@
         TimeTracker.prototype.uploadFile = function(dropBoxClient, filename, contents, callback){
             var self = this;
 
-            contents
             dropBoxClient.writeFile(filename, contents,
                 function(error, stat){
                     if(error){
