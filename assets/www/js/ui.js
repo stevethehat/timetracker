@@ -121,7 +121,7 @@
                     }, title
                 );
             } else {
-                callback(false);
+                callback(true);
             }
         }
 

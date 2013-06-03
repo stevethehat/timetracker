@@ -28,6 +28,18 @@
                                 }
                             );
                         } 
+                    },
+                    { 'text': 'Log tables', 'action': 
+                        function(){ 
+                            var db = self.database();
+
+                            db.transaction(
+                                function(transaction){
+                                    self.logTable(transaction, 'tasks');
+                                    self.logTable(transaction, 'events');
+                                }
+                            );
+                        }
                     }
                 ],
                 'position':{
@@ -90,7 +102,20 @@
         TimeTracker.prototype.showRecent = function(transaction, list){
             var self = this;
             console.log('showRecent');
-            var lookupSql = 'SELECT * FROM tasks order by latestevent desc';
+
+            var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '', 'position': 'bottom' }, list);
+            newTask.text = '';
+            var newTaskName = $('<input type="text" placeholder="New Task Name.."/>', { 'id': 'newTaskName' }).appendTo(newTask);
+            newTaskName.bind('keyup',
+                function(ev){
+                    if(ev.keyCode == 13){
+                        //alert('add event');
+                        self.addTask(newTaskName, list);
+                    }
+                }
+            );
+            console.log(newTaskName);
+            var lookupSql = 'SELECT * FROM tasks order by laststarttime desc';
             //var lookupSql = 'SELECT * FROM tasks limit 3';
             transaction.executeSql(lookupSql, [], 
                 function (transaction, results) {
@@ -101,19 +126,6 @@
                         self.addTaskToList(task.id, task.title, list, 'bottom');                  
                     }
                     console.log(list);
-
-                    var newTask = self.ui.addOption( { 'id': 'addTask', 'text': '', 'position': 'bottom' }, list);
-                    newTask.text = '';
-                    var newTaskName = $('<input type="text" placeholder="New Task Name.."/>', { 'id': 'newTaskName' }).appendTo(newTask);
-                    newTaskName.bind('keyup',
-                        function(ev){
-                            if(ev.keyCode == 13){
-                                //alert('add event');
-                                self.addTask(newTaskName, list);
-                            }
-                        }
-                    );
-                    console.log(newTaskName);
                 }
             );
         }
@@ -134,7 +146,7 @@
 
                 self.db.transaction(
                     function(transaction){
-                        transaction.executeSql('insert into tasks (title) values (?)', [taskName],
+                        transaction.executeSql('insert into tasks (title, duration) values (?, 0)', [taskName],
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
@@ -174,15 +186,53 @@
         TimeTracker.prototype.addEvent = function(taskID){
             var self = this;
             console.log('addEvent ' + taskID);
+            var now = new moment();
+            var nowUnix = now.unix();
             var db = self.database();
             db.transaction(
                 function(transaction){
-                    transaction.executeSql('insert into events (taskid, datetime) values (?, ?)', [taskID, new Date()],
+                    transaction.executeSql('insert into events (taskid, starttime) values (?, ?)', [taskID, nowUnix],
                         function(transaction, results){
                             console.log('addedEvent')
                             console.log(results);
 
-                            transaction.executeSql('update tasks set latestevent=? where id=?', [results.insertId, taskID])
+                            transaction.executeSql('update tasks set laststarttime=? where id=?', [nowUnix, taskID],
+                                function(transaction, results){
+                                    transaction.executeSql('select * from events order by id desc', [],
+                                        function(transaction, results){
+                                            // get last event
+                                            if(results.rows.length >= 2){
+                                                var lastEvent = results.rows.item(1);
+                                                var starttime = lastEvent.starttime;
+                                                var duration = nowUnix - Number(starttime);
+                                                var eventID = lastEvent.id;
+                                                var lastTaskID = lastEvent.taskid;
+
+                                                transaction.executeSql('update events set endtime=?, duration=? where id=?', [nowUnix, duration, eventID],
+                                                    function(transaction, results){
+                                                        transaction.executeSql('update tasks set duration = duration + ? where id=?', [duration, lastTaskID],
+                                                            function(transaction, results){
+                                                                console.log('task duration update');
+                                                                console.log(results);
+                                                                /*
+                                                                transaction.executeSql('insert into events (taskid, starttime) values (?, ?)', [taskID, nowUnix],
+                                                                    function(transaction, results){
+                                                                        console.log('addedEvent')
+                                                                        console.log(results);
+
+                                                                        transaction.executeSql('update tasks set laststarttime=? where id=?', [nowUnix, taskID])
+                                                                    }
+                                                                );
+                                                                */
+                                                            }
+                                                        );
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    );
+                                }
+                            );
                         }
                     );
                 }
@@ -219,8 +269,8 @@
 
         TimeTracker.prototype.initTables = function(transaction){
             var self = this;
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, latestevent)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, datetime)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
         }   
 
         TimeTracker.prototype.manage = function(){
