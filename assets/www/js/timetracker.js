@@ -116,7 +116,7 @@
                 }
             );
             console.log(newTaskName);
-            var lookupSql = 'SELECT * FROM tasks order by laststarttime desc';
+            var lookupSql = 'SELECT * FROM tasks where state=\'a\' order by laststarttime desc';
             //var lookupSql = 'SELECT * FROM tasks limit 3';
             transaction.executeSql(lookupSql, [], 
                 function (transaction, results) {
