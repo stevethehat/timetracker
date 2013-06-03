@@ -88,6 +88,11 @@
                 self.showRecent(transaction, self.home.recentTasks);
                 self.populateClients(transaction);
             });
+
+            var header = $('.header');
+            var div = $('<div id="searchContainer"/>').appendTo(header);
+            var search = $('<input type="text" id="search" placeholder="Search"/>').appendTo(div);
+            $('#timetracker').css('margin-top', header.height());
         };
 
         TimeTracker.prototype.populateClients = function(transaction){
