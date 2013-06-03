@@ -66,6 +66,7 @@ div#doAddTask{
 li#addTask input, li#addTask select{
     width:100%;
     margin:4px 0px 4px 0px;
+    border:none;
 }
 
 .menu{
