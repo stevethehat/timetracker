@@ -192,7 +192,11 @@
                                     var eventDuration = moment.duration(eventSeconds, 'seconds');
                                     var taskDuration = Number(time.data('taskduration')) + eventSeconds;
                                     console.log('update time spent');
-                                    time.text(eventDuration.humanize() + ' of ' + moment.duration(eventDuration, 'seconds').humanize());
+                                    if(taskDuration == eventDuration){
+                                        time.text(eventDuration.humanize());
+                                    } else {
+                                        time.text(eventDuration.humanize() + ' of ' + moment.duration(taskDuration, 'seconds').humanize());
+                                    }
                                 }, 10000);
                             //
                         }
