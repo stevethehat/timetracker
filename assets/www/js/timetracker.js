@@ -15,6 +15,7 @@
                 'items':[
                     { 'text': 'Manage', 'action': function(){ self.manage(); } },
                     { 'text': 'Preferences', 'action': function(){ self.preferences(); } },
+                    { 'text': 'Report', 'action': function(){ self.report(); } },
                     { 'text': 'Upload', 'action': function(){ self.upload(); } },
                     { 'text': 'Reset', 'action': 
                         function(){ 
@@ -123,7 +124,7 @@
                     for (i = 0; i < len; i++){       
                         var task = results.rows.item(i);   
                         console.log(task);     
-                        self.addTaskToList(task.id, task.title, list, 'bottom');                  
+                        self.addTaskToList(task.id, task.title, task.duration, list, 'top');                  
                     }
                     console.log(list);
                 }
@@ -146,11 +147,11 @@
 
                 self.db.transaction(
                     function(transaction){
-                        transaction.executeSql('insert into tasks (id, title, duration) values (?, ?, 0)', [taskID, taskName],
+                        transaction.executeSql('insert into tasks (id, state, title, duration) values (?, \'a\', ?, 0)', [taskID, taskName],
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
-                                self.taskClick(self.addTaskToList(taskID, taskName, list, 'top'));
+                                self.taskClick(self.addTaskToList(taskID, taskName, 0, list, 'top'));
                             }
                         )
                     }
@@ -168,41 +169,36 @@
 
             self.addEvent(taskID, nowUnix);
 
-            var db = self.database();
-            db.transaction(
-                function(transaction){
-                    transaction.executeSql('select duration from tasks where id=?', [taskID],
-                        function(transaction, results){
-                            var taskDuration = Number(results.rows.item(0).duration);
+            var taskDuration = Number(li.data('taskDuration'));
 
-                            li.siblings().removeClass('activeTask');
-                            $('p.time').remove();
-                            
-                            li.addClass('activeTask');
+            li.siblings().removeClass('activeTask');
+            $('p.time').remove();
+            
+            li.addClass('activeTask');
 
-                            var time = $('<p class="time">' + moment.duration(taskDuration).humanize() + '</p>').appendTo(li);
-                            time.data('starttime', nowUnix);
-                            time.data('taskduration', taskDuration)
-                            console.log('added timer info');
+            var time = $('<p class="time">' + moment.duration(taskDuration).humanize() + '</p>').appendTo(li);
+            li.data('starttime', nowUnix);
+            console.log('added timer info');
 
-                            var timer = setInterval(
-                                function(){
-                                    var now = moment();
-                                    var eventSeconds = now.unix() - Number(time.data('starttime'));
-                                    var eventDuration = moment.duration(eventSeconds, 'seconds');
-                                    var taskDuration = Number(time.data('taskduration')) + eventSeconds;
-                                    console.log('update time spent');
-                                    if(taskDuration == eventDuration){
-                                        time.text(eventDuration.humanize());
-                                    } else {
-                                        time.text(eventDuration.humanize() + ' of ' + moment.duration(taskDuration, 'seconds').humanize());
-                                    }
-                                }, 10000);
-                            //
-                        }
-                    );
-                }
-            );
+            if(self.timer){
+                clearInterval(self.timer);
+            }
+            self.timer = setInterval(
+                function(){
+                    var now = moment();
+                    var eventSeconds = now.unix() - Number(li.data('starttime'));
+                    var eventDuration = moment.duration(eventSeconds, 'seconds');
+                    var previousTaskDuration = Number(li.data('taskDuration'));
+                    var taskDuration = previousTaskDuration + eventSeconds;
+                    console.log('update time spent');
+                    console.log('previousTaskDuration = ' + previousTaskDuration);
+                    if(previousTaskDuration == 0){
+                        time.text(eventDuration.humanize());
+                    } else {
+                        time.text(eventDuration.humanize() + ' of ' + moment.duration(taskDuration, 'seconds').humanize());
+                    }
+                }, 10000);
+            //
         }
 
         TimeTracker.prototype.addEvent = function(taskID, nowUnix){
@@ -211,7 +207,7 @@
             var db = self.database();
             db.transaction(
                 function(transaction){
-                    transaction.executeSql('insert into events (id, taskid, starttime) values (?, ?, ?)', [self.generateGUID(), taskID, nowUnix],
+                    transaction.executeSql('insert into events (id, state, taskid, starttime) values (?, \'a\', ?, ?)', [self.generateGUID(), taskID, nowUnix],
                         function(transaction, results){
                             console.log('addedEvent')
                             console.log(results);
@@ -234,16 +230,6 @@
                                                             function(transaction, results){
                                                                 console.log('task duration update');
                                                                 console.log(results);
-                                                                /*
-                                                                transaction.executeSql('insert into events (taskid, starttime) values (?, ?)', [taskID, nowUnix],
-                                                                    function(transaction, results){
-                                                                        console.log('addedEvent')
-                                                                        console.log(results);
-
-                                                                        transaction.executeSql('update tasks set laststarttime=? where id=?', [nowUnix, taskID])
-                                                                    }
-                                                                );
-                                                                */
                                                             }
                                                         );
                                                     }
@@ -259,7 +245,7 @@
             );
         }
 
-        TimeTracker.prototype.addTaskToList = function(taskID, taskName, list, position){
+        TimeTracker.prototype.addTaskToList = function(taskID, taskName, duration, list, position){
             var self = this;
             console.log('addTaskToList ' + taskID + ' ' + taskName);
 
@@ -269,11 +255,15 @@
                     'position': position,
                     'data': {
                         'taskID': taskID,
-                        'taskName': taskName
+                        'taskName': taskName,
+                        'taskDuration': duration
                     },
                     'events': {
                         'click touch': function(option){
                             self.taskClick(newOption);
+                        },
+                        'swiperight': function(option){
+                            self.ui.alert('swipe right');
                         }
                     }
                 }, list
@@ -291,8 +281,8 @@
             var self = this;
             //transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
             //transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id, title, laststarttime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id, taskid, starttime, endtime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id, state, title, laststarttime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id, state, taskid, starttime, endtime, duration)');
         }   
 
         TimeTracker.prototype.manage = function(){
@@ -308,6 +298,12 @@
                     self.logTable(transaction, 'tasks');
                     console.log('events');
                     self.logTable(transaction, 'events');
+                }
+            );
+
+            self.createReport(
+                function(output){
+                    alert(output);
                 }
             );
         }
@@ -333,13 +329,7 @@
                     key:'cud3u6sk7p9zdmy', secret: 'sk7onlowc8pdtu9'
                 }
             );
-            /*
-            var dropBoxClient = new Dropbox.Client(
-                {
-                    key: 'NUNWO3CaTZA=|zRN+uRPccjnp9zVnzfxeiFlfkoHaEqylxUTy9B8opw==', secret: 'sk7onlowc8pdtu9'
-                }
-            );
-            */
+
             if(self.ui.isApp()){
                 console.log('using cordova dropbox driver');
                 dropBoxClient.authDriver(new Dropbox.Drivers.Cordova());
@@ -356,30 +346,17 @@
                     } else {
                         //alert('dropbox connect');
                         console.log('dropbox connected');
-
-                        self.dumpTable('tasks',
+                        self.createReport(
                             function(contents){
-                                self.uploadFile(dropBoxClient, 'timetracker-tasks.csv', contents,
+                                self.uploadFile(dropBoxClient, 'timetracker-report.csv', contents,
                                     function(ok){
                                         if(ok){
-                                            self.dumpTable('events',
-                                                function(contents){
-                                                    self.uploadFile(dropBoxClient, 'timetracker-events.csv', contents,
-                                                        function(ok){
-                                                            if(ok){
-                                                                self.ui.alert('Upload to dropbox complete.', 'Upload');
-                                                            } else {
-                                                                self.ui.alert('Upload to dropbox error.', 'Upload');
-                                                            }
-                                                        }
-                                                    );
-                                                }
-                                            );
+                                            self.ui.alert('Upload to dropbox complete.', 'Upload');
                                         } else {
                                             self.ui.alert('Upload to dropbox error.', 'Upload');
                                         }
-                                    }   
-                                );     
+                                    }
+                                );
                             }
                         );
                     }
@@ -400,6 +377,32 @@
                         console.log(stat);
                         callback(true);
                     }
+                }
+            );
+        }
+
+        TimeTracker.prototype.createReport = function(callback){
+            var self = this;
+            var db = self.database();
+            var output = '';
+
+            db.transaction(
+                function(transaction){
+                    transaction.executeSql('select * from tasks', [],
+                        function(transaction, results){
+                            var len = results.rows.length, i;
+                            for (i = 0; i < len; i++){ 
+                                var row = results.rows.item(i);
+                                var id = row.id;
+                                var taskName = row.title;
+                                var duration = moment.duration(Number(row.duration), 'seconds');
+                                var realTime = duration.days() + ':' + duration.hours() + ':' + duration.minutes();
+
+                                output = output + taskName + ',' + duration + ',' + duration.humanize() + ',' + realTime + '\n';
+                            }
+                            callback(output);
+                        }
+                    );
                 }
             );
         }
