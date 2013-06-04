@@ -107,6 +107,14 @@
             }
         }
 
+        UI.prototype.vibrate = function(){
+            var self = this;
+
+            if(self.isApp()){
+                navigator.notification.vibrate();
+            }
+        }
+
         UI.prototype.confirm = function(message, title, callback){
             var self = this;
 
