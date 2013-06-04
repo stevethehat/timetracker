@@ -16,6 +16,45 @@
             self.db.transaction(callback);
         }
 
+        DB.prototype.initTables = function(){
+            var self = this;
+
+            $.each(self.definition.tables,
+                function(index, tableDefinition){
+                    self.initTable(tableDefinition);
+                }
+            );            
+        }
+
+        DB.prototype.initTable = function(definition){
+            var self = this;
+            var command = 'CREATE TABLE IF NOT EXISTS ' + definition.name;
+            var fields = '';
+
+            $.each(definition.fields,
+                function(index, field){
+                    var fieldDetails = field;
+                    if(typeof(field) == 'Object'){
+                        fieldDetails = field.name;
+
+                        if(fieldDetails.unique){
+                            fieldDetails = fieldDetails + ' unique';
+                        }
+                    }
+                    if(index == 0){
+                        fields = fields + fieldDetails;
+                    } else {
+                        fields = fields + ',' + fieldDetails;
+                    }
+                }
+            );
+            self.transaction(
+                function(transaction){
+                    transaction.executeSql(command + '(' + fields + ')');
+                }
+            );
+        }
+
         DB.prototype.logTable = function(tableName){
             var self = this;
 
