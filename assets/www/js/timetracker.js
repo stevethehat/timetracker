@@ -286,8 +286,10 @@
             var self = this;
             //transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
             //transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id, state, title, laststarttime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id, state, taskid, starttime, endtime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id unique, state, title, laststarttime, duration)');
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id unique, state, taskid, starttime, endtime, duration)');
+
+            transaction.executeSql('insert or ignore into tasks (id, state, title, duration) values (\'idle\', \'a\', \'Idle\', 0)');
         }   
 
         TimeTracker.prototype.manage = function(){
