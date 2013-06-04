@@ -8,6 +8,11 @@
         TimeTracker.prototype.init = function () {
             var self = this;     
             //self.reset();    
+            self.preferences = {
+                'showSearch': false,
+                'homeScreenResults': 10,
+                'timeUpdateFrequency': 10000
+            }
             self.ui = new UI();  
 
             var dbDefinition = {
@@ -15,7 +20,8 @@
                 'tables': [
                     {
                         'name': 'tasks',
-                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'title', 'laststarttime', 'duration']
+                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'title', 'laststarttime', 'duration'],
+                        'initialRecords': [ { 'id': 'idle', 'state': 'a', 'title': 'Idle', 'duration': 0 } ]
                     },
                     {
                         'name': 'events',
@@ -23,7 +29,7 @@
                     }
                 ]
             }
-            self.DB = new DB(dbDefinition);
+            self.9DB = new DB(dbDefinition);
 
             var menuDefinition = {
                 'items':[
@@ -97,9 +103,11 @@
                 self.populateClients(transaction);
             });
 
-            var header = $('.header');
-            var div = $('<div id="searchContainer"/>').appendTo(header);
-            var search = $('<input type="text" id="search" placeholder="Search"/>').appendTo(div);
+            if(self.preferences.showSearch){
+                var header = $('.header');
+                var div = $('<div id="searchContainer"/>').appendTo(header);
+                var search = $('<input type="text" id="search" placeholder="Search"/>').appendTo(div);
+            }
             $('#timetracker').css('margin-top', header.height());
         };
 
@@ -211,7 +219,7 @@
                     } else {
                         time.text(eventDuration.humanize() + ' of ' + moment.duration(taskDuration, 'seconds').humanize());
                     }
-                }, 10000);
+                }, self.preferences.timeUpdateFrequency);
             //
         }
 
