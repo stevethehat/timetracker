@@ -9,7 +9,7 @@
             var self = this;     
             //self.reset();    
             self.ui = new UI();  
-            self.db = self.database();
+            self.DB = new DB('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024);
 
             var menuDefinition = {
                 'items':[
@@ -31,15 +31,9 @@
                         } 
                     },
                     { 'text': 'Log tables', 'action': 
-                        function(){ 
-                            var db = self.database();
-
-                            db.transaction(
-                                function(transaction){
-                                    self.logTable(transaction, 'tasks');
-                                    self.logTable(transaction, 'events');
-                                }
-                            );
+                        function(){
+                            self.DB.logTable('tasks');
+                            self.DB.logTable('events');
                         }
                     }
                 ],
@@ -66,7 +60,7 @@
                 }
             );
 
-            self.db.transaction(function (transaction) {
+            self.DB.transaction(function (transaction) {
                 console.log('init');
                 self.initTables(transaction);
             });
@@ -84,7 +78,7 @@
             self.home.tasks = self.ui.addSection( { 'id': 'home', 'class': 'home' });
             self.home.recentTasks = self.ui.addList( { 'id': 'recentTasks', 'class': 'taskList' }, self.home.tasks);
            
-            self.db.transaction(function (transaction) {
+            self.DB.transaction(function (transaction) {
                 self.showRecent(transaction, self.home.recentTasks);
                 self.populateClients(transaction);
             });
@@ -150,7 +144,7 @@
 
                 var taskID = self.generateGUID();
 
-                self.db.transaction(
+                self.DB.transaction(
                     function(transaction){
                         transaction.executeSql('insert into tasks (id, state, title, duration) values (?, \'a\', ?, 0)', [taskID, taskName],
                             function(transaction, results){
@@ -172,6 +166,7 @@
             var now = new moment();
             var nowUnix = now.unix();
 
+            self.ui.vibrate();
             self.addEvent(taskID, nowUnix);
 
             var taskDuration = Number(li.data('taskDuration'));
@@ -209,8 +204,7 @@
         TimeTracker.prototype.addEvent = function(taskID, nowUnix){
             var self = this;
             console.log('addEvent ' + taskID);
-            var db = self.database();
-            db.transaction(
+            self.DB.transaction(
                 function(transaction){
                     transaction.executeSql('insert into events (id, state, taskid, starttime) values (?, \'a\', ?, ?)', [self.generateGUID(), taskID, nowUnix],
                         function(transaction, results){
@@ -276,12 +270,6 @@
             return(newOption);
         }
 
-        TimeTracker.prototype.database = function(){
-            var self = this;
-            console.log('database')
-            return(window.openDatabase('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024));
-        }
-
         TimeTracker.prototype.initTables = function(transaction){
             var self = this;
             //transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
@@ -298,8 +286,7 @@
 
         TimeTracker.prototype.report = function(){
             var self = this;
-            var db = self.database();
-            db.transaction(
+            self.DB.transaction(
                 function(transaction){
                     console.log('tasks');
                     self.logTable(transaction, 'tasks');
@@ -311,18 +298,6 @@
             self.createReport(
                 function(output){
                     alert(output);
-                }
-            );
-        }
-
-        TimeTracker.prototype.logTable = function(transaction, tableName){
-            transaction.executeSql('select * from ' + tableName, [],
-                function(transaction, results){
-                    var len = results.rows.length, i;
-                    for (i = 0; i < len; i++){       
-                        var row = results.rows.item(i);   
-                        console.log(row);     
-                    }                    
                 }
             );
         }
@@ -387,10 +362,9 @@
 
         TimeTracker.prototype.createReport = function(callback){
             var self = this;
-            var db = self.database();
             var output = '';
 
-            db.transaction(
+            self.DB.transaction(
                 function(transaction){
                     transaction.executeSql('select * from tasks', [],
                         function(transaction, results){
@@ -413,12 +387,11 @@
 
         TimeTracker.prototype.dumpTable = function(tableName, callback){
             var self = this;
-            var db = self.database();
             var result = '';
 
             console.log('dumpTable ' + tableName);
 
-            db.transaction(
+            self.DB.transaction(
                 function(transaction){
                     transaction.executeSql('select * from ' + tableName, [],
                         function(transaction, results){
@@ -448,8 +421,7 @@
             var self = this;
             console.log('reset');
 
-            var db = self.database();
-            db.transaction(
+            self.DB.transaction(
                 function(transaction){
                     transaction.executeSql('drop table tasks', []);
                     transaction.executeSql('drop table events', []);
