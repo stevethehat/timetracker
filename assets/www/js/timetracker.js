@@ -9,7 +9,21 @@
             var self = this;     
             //self.reset();    
             self.ui = new UI();  
-            self.DB = new DB('timetracker', '1.0', 'timetracker database', 2 * 1024 * 1024);
+
+            var dbDefinition = {
+                'name': 'timetracker', 'version': '1.0', 'description': 'timetracker database',
+                'tables': [
+                    {
+                        'name': 'tasks',
+                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'title', 'laststarttime', 'duration']
+                    },
+                    {
+                        'name': 'events',
+                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'taskid', 'starttime', 'endtime', 'duration']
+                    }
+                ]
+            }
+            self.DB = new DB(dbDefinition);
 
             var menuDefinition = {
                 'items':[

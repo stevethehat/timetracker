@@ -1,13 +1,14 @@
 (
     function ($) {
-        DB = function (name, version, description, size) {
+        DB = function (definition) {
             var self = this;
-            self.init(name, version ,description, size);
+            self.init(definition);
         };
 
-        DB.prototype.init = function (name, version ,description, size) {
+        DB.prototype.init = function (definition) {
             var self = this;     
-            self.db = window.openDatabase(name, version, description, size);
+            self.definition = definition;
+            self.db = window.openDatabase(definition.name, definition.version, definition.description, definition.size);
         };
 
         DB.prototype.transaction = function(callback){
