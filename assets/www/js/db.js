@@ -9,11 +9,38 @@
             var self = this;     
             self.definition = definition;
             self.db = window.openDatabase(definition.name, definition.version, definition.description, definition.size);
+            self.initTables();
         };
 
         DB.prototype.transaction = function(callback){
             var self = this;
             self.db.transaction(callback);
+        }
+
+        DB.prototype.execute = function(command, params, callback, transaction){
+            var self = this;
+
+            function doExecute(executeTransaction){
+                executeTransaction.executeSql(command, [], 
+                    function(transaction, results){
+                        console.log(results);
+                    }
+                );
+            }
+
+            var useTransaction = transaction;
+
+            if(useTransaction){
+
+            } else {
+
+            }
+
+            self.transaction(
+                function(transaction){
+                      
+                }
+            );
         }
 
         DB.prototype.initTables = function(){
@@ -31,15 +58,24 @@
             var command = 'CREATE TABLE IF NOT EXISTS ' + definition.name;
             var fields = '';
 
+            console.log('init table');
+            console.log(definition);
+
             $.each(definition.fields,
                 function(index, field){
-                    var fieldDetails = field;
-                    if(typeof(field) == 'Object'){
+                    var fieldDetails = '';
+                    var fieldTypeOf = typeof(field);
+                    console.log('field = "' + fieldTypeOf + '"'); 
+                    if(fieldTypeOf === 'object'){
+                        console.log('complex field');
+                        console.log(fieldDetails);
                         fieldDetails = field.name;
 
-                        if(fieldDetails.unique){
+                        if(field.unique){
                             fieldDetails = fieldDetails + ' unique';
                         }
+                    } else {
+                        fieldDetails = field;
                     }
                     if(index == 0){
                         fields = fields + fieldDetails;
@@ -48,11 +84,10 @@
                     }
                 }
             );
-            self.transaction(
-                function(transaction){
-                    transaction.executeSql(command + '(' + fields + ')');
-                }
-            );
+
+            var fullCommand = command + '(' + fields + ')';
+            console.log(fullCommand);
+            self.execute(fullCommand);
         }
 
         DB.prototype.logTable = function(tableName){

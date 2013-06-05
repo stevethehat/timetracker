@@ -29,7 +29,7 @@
                     }
                 ]
             }
-            self.9DB = new DB(dbDefinition);
+            self.DB = new DB(dbDefinition);
 
             var menuDefinition = {
                 'items':[
@@ -103,8 +103,8 @@
                 self.populateClients(transaction);
             });
 
+            var header = $('.header');
             if(self.preferences.showSearch){
-                var header = $('.header');
                 var div = $('<div id="searchContainer"/>').appendTo(header);
                 var search = $('<input type="text" id="search" placeholder="Search"/>').appendTo(div);
             }
