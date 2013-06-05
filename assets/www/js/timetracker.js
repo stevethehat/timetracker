@@ -309,35 +309,32 @@
         TimeTracker.prototype.manage = function(){
 
         }
-
+       
         TimeTracker.prototype.backup = function(){
             var self = this;
             var dump = null;
-            self.DB.tablesAsJSON(
-                function(result){
-                    dump = result;
-                    console.log(dump);
 
-                    var dropBox = new DropBoxHelper(
-                        function(dropBox){
-                            dropBox.uploadFile('timetracker-backup.json', JSON.stringify(dump),
-                                function(ok){
-                                    if(ok){
-                                        self.ui.alert('Backup to dropbox complete.', 'Backup');
-                                    } else {
-                                        self.ui.alert('Backup to dropbox error.', 'Backup');
-                                    }
-                                }
-                            ); 
+            $.when(self.DB.tablesAsJSON(), new DropBoxHelper().authenticate()).then(
+                function(tablesData, dropBox){
+                    console.log(tablesData);
+
+                    dropBox.uploadFile('timetracker-backup.json', JSON.stringify(tablesData),
+                        function(ok){
+                            if(ok){
+                                self.ui.alert('Backup to dropbox complete.', 'Backup');
+                            } else {
+                                self.ui.alert('Backup to dropbox error.', 'Backup');
+                            }
                         }
-                    );
+                    );                     
                 }
             );
-        }
+        }       
 
         TimeTracker.prototype.restore = function(){
             var self = this;
             //var 
+            //
         }
 
         TimeTracker.prototype.sync = function(){
@@ -410,38 +407,6 @@
             );
         }
 
-        TimeTracker.prototype.dumpTable = function(tableName, callback){
-            var self = this;
-            var result = '';
-
-            console.log('dumpTable ' + tableName);
-
-            self.DB.transaction(
-                function(transaction){
-                    transaction.executeSql('select * from ' + tableName, [],
-                        function(transaction, results){
-                            var len = results.rows.length, i;
-                            for (i = 0; i < len; i++){       
-                                var row = results.rows.item(i); 
-                                $.each(_.values(row),
-                                    function(index, value){
-                                        if(index == 0){
-                                            result = result + value;
-                                        } else {
-                                            result = result + ',' + value;
-                                        }
-                                    }
-                                );  
-                                result = result + '\n';
-                                console.log(row);     
-                            }
-                            callback(result);
-                        }
-                    );
-                }
-            );
-        }
-
         TimeTracker.prototype.reset = function(){
             var self = this;
             console.log('reset');
@@ -460,71 +425,6 @@
                 }
             );     
             return guid;
-        }
-
-
-        DropBoxHelper = function (callback) {
-            var self = this;
-            self.init(callback);
-        };
-
-        DropBoxHelper.prototype.init = function (callback) {
-            var self = this;     
-            self.dropBoxClient = new Dropbox.Client(
-                {
-                    key:'cud3u6sk7p9zdmy', secret: 'sk7onlowc8pdtu9'
-                }
-            );
-
-            if(self.isApp()){
-                console.log('using cordova dropbox driver');
-                self.dropBoxClient.authDriver(new Dropbox.Drivers.Cordova());
-            } else {
-                self.dropBoxClient.authDriver(new Dropbox.Drivers.Redirect());
-            }
-            self.dropBoxClient.authenticate(
-                function(error, client){
-                    self.dropBoxClient = client;
-                    if(error){
-                        console.log('dropbox authentication error');
-                        console.log(error);
-                        //self.ui.alert('Dropbox authentication failed.')
-                        callback(self, false);
-                    } else {
-                        console.log('dropbox connected');
-                        callback(self, true);
-                    }
-                }
-            );
-        };
-
-        DropBoxHelper.prototype.uploadFile = function(fileName, contents, callback){
-            var self = this;
-            console.log('uploadFile');
-
-            self.dropBoxClient.writeFile(fileName, contents, 
-                function(error, stat){
-                    console.log('uploadFile ' + error);
-
-                    if(error){
-                        callback(false);
-                    } else {
-                        callback(true);
-                    }
-                }
-            );
-        }
-
-        DropBoxHelper.prototype.isApp = function(){
-            var self = this;
-            if(self.isRunningAsApp == null){
-                if(_.str.startsWith(window.location.href, 'http')){
-                    self.isRunningAsApp = false;
-                } else {
-                    self.isRunningAsApp = true;
-                }
-            }
-            return(self.isRunningAsApp);
         }
     } 
 )(jQuery);

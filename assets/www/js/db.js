@@ -152,7 +152,67 @@
             );
         }
 
+        DB.prototype.tableAsJSON = function(tableName){
+            var self = this;
+            var d = new $.Deferred();
 
+            console.log('tableAsJSON ' + tableName);
+
+            var tableDefinition = self.getTableDefinition(tableName);
+            var result = {};
+            result.definition = tableDefinition;
+            result.results = [];
+
+            self.transaction(
+                function(transaction){
+                    transaction.executeSql('select * from ' + tableName, [], 
+                        function(transaction, results){
+                            var len = results.rows.length, i;
+                            for (i = 0; i < len; i++){       
+                                var row = results.rows.item(i);   
+                                var record = {};
+
+                                $.each(_.keys(row),
+                                    function(index, field){
+                                        record[field] = row[field];
+                                    }
+                                );
+                                //console.log(record);
+                                result.results.push(record);
+                            }
+                            d.resolve(result);
+                            //callback(result);
+                        }                        
+                    );
+                }
+            );
+            return(d.promise());
+        }
+
+        DB.prototype.tablesAsJSON = function(){
+            var self = this;
+            var d = new $.Deferred();
+
+            var result = { 'tables': [] };
+            var tables = [];
+
+            $.each(self.definition.tables,
+                function(index, tableDefinition){
+                    tables.push(self.tableAsJSON(tableDefinition.name));
+                }
+            );
+
+            $.when.apply($, tables).then(
+                function(){
+                    console.log('in when');
+                    console.log(arguments);
+                    d.resolve(arguments);
+                }
+            );
+
+            return(d.promise());
+        }
+        /*
         DB.prototype.tableAsJSON = function(tableName, callback){
             var self = this;
             console.log('tableAsJSON ' + tableName);
@@ -220,7 +280,8 @@
                 }
             );
         }
-
+        */
+       
         DB.prototype.isApp = function(){
             var self = this;
             if(self.isRunningAsApp == null){
