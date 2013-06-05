@@ -50,10 +50,14 @@
                             );
                         } 
                     },
-                    { 'text': 'Log tables', 'action': 
+                    { 'text': 'Backup', 'action': 
                         function(){
-                            self.DB.logTable('tasks');
-                            self.DB.logTable('events');
+                            self.backup();
+                        }
+                    },
+                    { 'text': 'Restore', 'action':
+                        function(){
+                            self.restore();
                         }
                     }
                 ],
@@ -307,11 +311,33 @@
         }
 
         TimeTracker.prototype.backup = function(){
+            var self = this;
+            var dump = null;
+            self.DB.tablesAsJSON(
+                function(result){
+                    dump = result;
+                    console.log(dump);
 
+                    var dropBox = new DropBoxHelper(
+                        function(dropBox){
+                            dropBox.uploadFile('timetracker-backup.json', JSON.stringify(dump),
+                                function(ok){
+                                    if(ok){
+                                        self.ui.alert('Backup to dropbox complete.', 'Backup');
+                                    } else {
+                                        self.ui.alert('Backup to dropbox error.', 'Backup');
+                                    }
+                                }
+                            ); 
+                        }
+                    );
+                }
+            );
         }
 
         TimeTracker.prototype.restore = function(){
-
+            var self = this;
+            //var 
         }
 
         TimeTracker.prototype.sync = function(){
@@ -458,6 +484,7 @@
             }
             self.dropBoxClient.authenticate(
                 function(error, client){
+                    self.dropBoxClient = client;
                     if(error){
                         console.log('dropbox authentication error');
                         console.log(error);
