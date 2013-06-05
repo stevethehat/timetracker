@@ -34,7 +34,7 @@
 
             // Cordova is ready
             function onDeviceReady() {
-                var timeTracker = new TimeTracker();
+                document.timeTracker = new TimeTracker();
             }
 
             if(_.str.startsWith(window.location.href, 'http')){

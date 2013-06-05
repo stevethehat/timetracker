@@ -82,7 +82,7 @@
 
             self.DB.transaction(function (transaction) {
                 console.log('init');
-                self.initTables(transaction);
+                //self.initTables(transaction);
             });
            self.showHome();
         };

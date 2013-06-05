@@ -31,16 +31,14 @@
             var useTransaction = transaction;
 
             if(useTransaction){
-
+                doExecute(useTransaction);
             } else {
-
+                self.transaction(
+                    function(transaction){
+                        doExecute(transaction);
+                    }
+                );
             }
-
-            self.transaction(
-                function(transaction){
-                      
-                }
-            );
         }
 
         DB.prototype.initTables = function(){
@@ -56,10 +54,18 @@
         DB.prototype.initTable = function(definition){
             var self = this;
             var command = 'CREATE TABLE IF NOT EXISTS ' + definition.name;
-            var fields = '';
 
             console.log('init table');
             console.log(definition);
+
+            var fullCommand = command + '(' + self.getFieldList(definition, true) + ')';
+            console.log(fullCommand);
+            self.execute(fullCommand);
+        }
+
+        DB.prototype.getFieldList = function(definition, includeDetails){
+            var self = this;
+            var fields = '';
 
             $.each(definition.fields,
                 function(index, field){
@@ -71,8 +77,10 @@
                         console.log(fieldDetails);
                         fieldDetails = field.name;
 
-                        if(field.unique){
-                            fieldDetails = fieldDetails + ' unique';
+                        if(includeDetails){
+                            if(field.unique){
+                                fieldDetails = fieldDetails + ' unique';
+                            }
                         }
                     } else {
                         fieldDetails = field;
@@ -84,11 +92,21 @@
                     }
                 }
             );
-
-            var fullCommand = command + '(' + fields + ')';
-            console.log(fullCommand);
-            self.execute(fullCommand);
+            return(fields);
         }
+
+        DB.prototype.getTableDefinition = function(tableName){
+            var self = this;
+            var result = null;
+            $.each(self.definition.tables,
+                function(index, tableDefinition){
+                    if(tableDefinition.name == tableName){
+                        result = tableDefinition;
+                    }
+                }
+            );            
+            return(result);
+        }        
 
         DB.prototype.logTable = function(tableName){
             var self = this;
@@ -121,9 +139,40 @@
         }
 
 
-        DB.prototype.tableAsJSON = function(tableName){
+        DB.prototype.tableAsJSON = function(tableName, callback){
             var self = this;
+            console.log('tableAsJSON ' + tableName);
+
+            var tableDefinition = self.getTableDefinition(tableName);
+            var result = {};
+            result.definition = tableDefinition;
+            result.results = [];
+
+            self.transaction(
+                function(transaction){
+                    transaction.executeSql('select * from ' + tableName, [], 
+                        function(transaction, results){
+                            var len = results.rows.length, i;
+                            for (i = 0; i < len; i++){       
+                                var row = results.rows.item(i);   
+                                var record = {};
+
+                                $.each(_.keys(row),
+                                    function(index, field){
+                                        record[field] = row[field];
+                                    }
+                                );
+                                console.log(record);
+                                result.results.push(record);
+                            }
+                        }                        
+                    );
+                }
+            );
+            callback(result);
+            return(result);
         }
+
         DB.prototype.tablesAsJSON = function(tableNames){
             var self = this;
         }
