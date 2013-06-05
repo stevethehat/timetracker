@@ -12,6 +12,20 @@
             self.initTables();
         };
 
+        DB.prototype.reset = function(){
+            var self = this;
+
+            self.db.transaction(
+                function(transaction){
+                    $.each(self.definition.tables,
+                        function(index, tableDefinition){
+                            transaction.executeSql('drop table ' + tableDefinition.name);
+                        }
+                    );
+                }
+            );            
+        }
+
         DB.prototype.transaction = function(callback){
             var self = this;
             self.db.transaction(callback);
