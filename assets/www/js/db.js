@@ -179,16 +179,46 @@
                                 console.log(record);
                                 result.results.push(record);
                             }
+                            callback(result);
                         }                        
                     );
                 }
             );
-            callback(result);
-            return(result);
+            //callback(result);
+            //return(result);
         }
 
-        DB.prototype.tablesAsJSON = function(tableNames){
+        DB.prototype.tablesAsJSON = function(callback){
             var self = this;
+            var tablesProcessed = 0;
+            var tableCount = self.definition.tables.length;
+            var result = { 'tables': [] };
+
+            $.each(self.definition.tables,
+                function(index, tableDefinition){
+                    self.tableAsJSON(tableDefinition.name, 
+                        function(json){
+                            result.tables.push(json);
+                            tablesProcessed++;
+                            if(tablesProcessed == tableCount){
+                                callback(result);
+                            }
+                        }
+                    );
+                }
+            );
+            
+            self.tableAsJSON(self.definition.tables[index].name,
+                function(tableJSON){
+                    result.tables.push(tableJSON);
+                }
+            );
+            self.transaction(
+                function(transaction){
+
+
+                }
+            );
         }
 
         DB.prototype.isApp = function(){
