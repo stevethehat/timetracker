@@ -45,8 +45,10 @@
             return(d.promise());
         };
 
-        DropBoxHelper.prototype.uploadFile = function(fileName, contents, callback){
+        DropBoxHelper.prototype.uploadFile = function(fileName, contents){
             var self = this;
+            var d = new $.Deferred();
+
             console.log('uploadFile');
 
             self.dropBoxClient.writeFile(fileName, contents, 
@@ -54,12 +56,32 @@
                     console.log('uploadFile ' + error);
 
                     if(error){
-                        callback(false);
+                        d.reject();
                     } else {
-                        callback(true);
+                        d.resolve();
                     }
                 }
             );
+            return(d.promise());
+        }
+
+        DropBoxHelper.prototype.downloadFile = function(fileName, contents){
+            var self = this;
+            var d = new $.Deferred();
+
+            console.log('downloadFile');
+
+            self.dropBoxClient.writeFile(fileName, 
+                function(error, data){
+                    console.log('downloadFile ' + error);
+                    if(error){
+                        d.reject();
+                    } else {
+                        d.resolve(data);
+                    }
+                }
+            );
+            return(d.promise());
         }
 
         DropBoxHelper.prototype.isApp = function(){

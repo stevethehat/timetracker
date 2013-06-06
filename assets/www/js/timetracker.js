@@ -50,16 +50,8 @@
                             );
                         } 
                     },
-                    { 'text': 'Backup', 'action': 
-                        function(){
-                            self.backup();
-                        }
-                    },
-                    { 'text': 'Restore', 'action':
-                        function(){
-                            self.restore();
-                        }
-                    }
+                    { 'text': 'Backup', 'action': self.backup },
+                    { 'text': 'Restore', 'action': self.restore }
                 ],
                 'position':{
                     'use': 'top',
@@ -314,27 +306,47 @@
             var self = this;
             var dump = null;
 
-            $.when(self.DB.tablesAsJSON(), new DropBoxHelper().authenticate()).then(
+            $.when(self.DB.tablesAsJSON(), new DropBoxHelper().authenticate()).done(
                 function(tablesData, dropBox){
                     console.log(tablesData);
 
-                    dropBox.uploadFile('timetracker-backup.json', JSON.stringify(tablesData),
-                        function(ok){
-                            if(ok){
-                                self.ui.alert('Backup to dropbox complete.', 'Backup');
-                            } else {
-                                self.ui.alert('Backup to dropbox error.', 'Backup');
-                            }
+                    $.when(dropBox.uploadFile('timetracker-backup.json', JSON.stringify(tablesData))).done(
+                        function(){
+                            self.ui.alert('Backup to dropbox complete.', 'Backup');
                         }
-                    );                     
+                    ).fail(
+                        function(){
+                            self.ui.alert('Backup to dropbox error.', 'Backup');
+                        }
+                    );
+                }
+            ).fail(
+                function(){
+
                 }
             );
         }       
 
         TimeTracker.prototype.restore = function(){
             var self = this;
-            //var 
-            //
+
+            $.when(new DropBoxHelper.authenticate()).done(
+                function(dropBox){
+                    $.when(dropBox.downloadFile('timetracker-backup.json')).done(
+                        function(data){
+                            alert(data);
+                        }
+                    ).fail(
+                        function(){
+
+                        }
+                    );
+                }
+            ).fail(
+                function(){
+
+                }
+            );
         }
 
         TimeTracker.prototype.sync = function(){
