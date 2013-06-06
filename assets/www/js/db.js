@@ -177,11 +177,9 @@
                                         record[field] = row[field];
                                     }
                                 );
-                                //console.log(record);
                                 result.results.push(record);
                             }
                             d.resolve(result);
-                            //callback(result);
                         }                        
                     );
                 }
@@ -204,7 +202,6 @@
 
             $.when.apply($, tables).then(
                 function(){
-                    console.log('in when');
                     console.log(arguments);
                     d.resolve(arguments);
                 }
