@@ -95,6 +95,9 @@
                             if(field.unique){
                                 fieldDetails = fieldDetails + ' unique';
                             }
+                            if(field['default']){
+                                fieldDetails = fieldDetails + ' default \'' + field['default'] + '\'';
+                            }
                         }
                     } else {
                         fieldDetails = field;
@@ -209,75 +212,17 @@
 
             return(d.promise());
         }
-        /*
-        DB.prototype.tableAsJSON = function(tableName, callback){
+
+        DB.prototype.backup = function(){
             var self = this;
-            console.log('tableAsJSON ' + tableName);
-
-            var tableDefinition = self.getTableDefinition(tableName);
-            var result = {};
-            result.definition = tableDefinition;
-            result.results = [];
-
-            self.transaction(
-                function(transaction){
-                    transaction.executeSql('select * from ' + tableName, [], 
-                        function(transaction, results){
-                            var len = results.rows.length, i;
-                            for (i = 0; i < len; i++){       
-                                var row = results.rows.item(i);   
-                                var record = {};
-
-                                $.each(_.keys(row),
-                                    function(index, field){
-                                        record[field] = row[field];
-                                    }
-                                );
-                                console.log(record);
-                                result.results.push(record);
-                            }
-                            callback(result);
-                        }                        
-                    );
-                }
-            );
-            //callback(result);
-            //return(result);
+            return(this.tablesAsJSON());
         }
 
-        DB.prototype.tablesAsJSON = function(callback){
+        DB.prototype.restore = function(data){
             var self = this;
-            var tablesProcessed = 0;
-            var tableCount = self.definition.tables.length;
-            var result = { 'tables': [] };
-
-            $.each(self.definition.tables,
-                function(index, tableDefinition){
-                    self.tableAsJSON(tableDefinition.name, 
-                        function(json){
-                            result.tables.push(json);
-                            tablesProcessed++;
-                            if(tablesProcessed == tableCount){
-                                callback(result);
-                            }
-                        }
-                    );
-                }
-            );
-            
-            self.tableAsJSON(self.definition.tables[index].name,
-                function(tableJSON){
-                    result.tables.push(tableJSON);
-                }
-            );
-            self.transaction(
-                function(transaction){
-
-
-                }
-            );
+            this.reset();
+            this.initTables();
         }
-        */
        
         DB.prototype.isApp = function(){
             var self = this;

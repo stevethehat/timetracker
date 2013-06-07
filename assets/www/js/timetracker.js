@@ -20,12 +20,12 @@
                 'tables': [
                     {
                         'name': 'tasks',
-                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'title', 'laststarttime', 'duration'],
-                        'initialRecords': [ { 'id': 'idle', 'state': 'a', 'title': 'Idle', 'duration': 0 } ]
+                        'fields': [{'name': 'id', 'unique': true}, {'name': 'state', 'default': 'a'}, 'title', 'laststarttime', {'name': 'duration', 'default': '0'}],
+                        'initialRecords': [ { 'id': 'idle', 'state': 'a', 'title': 'Idle', 'duration': '0' } ]
                     },
                     {
                         'name': 'events',
-                        'fields': [{ 'name':'id', 'unique': true }, 'state', 'taskid', 'starttime', 'endtime', 'duration']
+                        'fields': [{ 'name':'id', 'unique': true }, {'name': 'state', 'default': 'a'}, 'taskid', 'starttime', 'endtime', {'name': 'duration', 'default': '0'}]
                     }
                 ]
             }
@@ -164,7 +164,7 @@
 
                 self.DB.transaction(
                     function(transaction){
-                        transaction.executeSql('insert into tasks (id, state, title, duration) values (?, \'a\', ?, 0)', [taskID, taskName],
+                        transaction.executeSql('insert into tasks (id, title) values (?, ?)', [taskID, taskName],
                             function(transaction, results){
                                 console.log('addedTask')
                                 console.log(results);
@@ -224,7 +224,7 @@
             console.log('addEvent ' + taskID);
             self.DB.transaction(
                 function(transaction){
-                    transaction.executeSql('insert into events (id, state, taskid, starttime) values (?, \'a\', ?, ?)', [self.generateGUID(), taskID, nowUnix],
+                    transaction.executeSql('insert into events (id, taskid, starttime) values (?, ?, ?)', [self.generateGUID(), taskID, nowUnix],
                         function(transaction, results){
                             console.log('addedEvent')
                             console.log(results);
@@ -286,17 +286,7 @@
                 }, list
             );
             return(newOption);
-        }
-
-        TimeTracker.prototype.initTables = function(transaction){
-            var self = this;
-            //transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title, laststarttime, duration)');
-            //transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, taskid, starttime, endtime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS tasks (id unique, state, title, laststarttime, duration)');
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS events (id unique, state, taskid, starttime, endtime, duration)');
-
-            transaction.executeSql('insert or ignore into tasks (id, state, title, duration) values (\'idle\', \'a\', \'Idle\', 0)');
-        }   
+        } 
 
         TimeTracker.prototype.manage = function(){
 
