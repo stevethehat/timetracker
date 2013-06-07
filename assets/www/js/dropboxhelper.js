@@ -71,7 +71,7 @@
 
             console.log('downloadFile');
 
-            self.dropBoxClient.writeFile(fileName, 
+            self.dropBoxClient.readFile(fileName, 
                 function(error, data){
                     console.log('downloadFile ' + error);
                     if(error){

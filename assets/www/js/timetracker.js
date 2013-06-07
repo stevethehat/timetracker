@@ -50,8 +50,8 @@
                             );
                         } 
                     },
-                    { 'text': 'Backup', 'action': self.backup },
-                    { 'text': 'Restore', 'action': self.restore }
+                    { 'text': 'Backup', 'action': function(){ self.backup(); } },
+                    { 'text': 'Restore', 'action': function(){ self.restore(); } }
                 ],
                 'position':{
                     'use': 'top',
@@ -330,7 +330,7 @@
         TimeTracker.prototype.restore = function(){
             var self = this;
 
-            $.when(new DropBoxHelper.authenticate()).done(
+            $.when(new DropBoxHelper().authenticate()).done(
                 function(dropBox){
                     $.when(dropBox.downloadFile('timetracker-backup.json')).done(
                         function(data){
