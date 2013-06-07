@@ -9,7 +9,24 @@
             var self = this;     
             self.definition = definition;
             self.db = window.openDatabase(definition.name, definition.version, definition.description, definition.size);
-            self.initTables();
+
+            // check version
+            self.execute('select * from version order by version desc', []).then(
+                function(results){
+                    console.log('DB version check');
+                    console.log(results);
+                    console.log('current db version = ' + results.rows.item(0).version);
+                    var currentDefinition = '';
+                    if(results.rows.length > 0){
+                        currentDefinition = results.rows.item(0).definition;
+                    }
+
+                    if(currentDefinition != JSON.stringify(self.definition)){
+                        console.log('Update DB');
+                        self.initTables();
+                    }
+                }
+            );
         };
 
         DB.prototype.reset = function(){
@@ -31,13 +48,18 @@
             self.db.transaction(callback);
         }
 
-        DB.prototype.execute = function(command, params, callback, transaction){
+        DB.prototype.execute = function(command, params, transaction){
             var self = this;
+            var d = $.Deferred();
+            console.log('DB.execute');
+            console.log(command);
 
             function doExecute(executeTransaction){
-                executeTransaction.executeSql(command, [], 
+                executeTransaction.executeSql(command, params, 
                     function(transaction, results){
                         console.log(results);
+                        console.log('execute complete');
+                        d.resolve(results);
                     }
                 );
             }
@@ -53,14 +75,39 @@
                     }
                 );
             }
+            return(d.promise());
         }
 
         DB.prototype.initTables = function(){
             var self = this;
+            var promises = [];
+
+            console.log('init versions table');
+            promises.push(self.initTable(
+                {
+                        'name': 'version',
+                        'fields': ['version', 'definition', 'date']
+                }
+            ));
 
             $.each(self.definition.tables,
                 function(index, tableDefinition){
-                    self.initTable(tableDefinition);
+                    promises.push(self.initTable(tableDefinition));
+                }
+            );
+
+            $.when(promises).then(
+                function(){
+                    console.log('version table available');
+                    self.execute('select version from version order by version desc', []).then(
+                        function(results){
+                            var nextVersion = 1;
+                            if(results.rows.length > 0){
+                                nextVersion = Number(results.rows.item(0).version) + 1;
+                            }
+                            self.execute('insert into version (version, definition) values (?, ?)', [nextVersion, JSON.stringify(self.definition)]);
+                        }
+                    );
                 }
             );            
         }
@@ -74,7 +121,7 @@
 
             var fullCommand = command + '(' + self.getFieldList(definition, true) + ')';
             console.log(fullCommand);
-            self.execute(fullCommand);
+            return(self.execute(fullCommand));
         }
 
         DB.prototype.getFieldList = function(definition, includeDetails){

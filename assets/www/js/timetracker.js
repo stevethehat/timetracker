@@ -20,7 +20,7 @@
                 'tables': [
                     {
                         'name': 'tasks',
-                        'fields': [{'name': 'id', 'unique': true}, {'name': 'state', 'default': 'a'}, 'title', 'laststarttime', {'name': 'duration', 'default': '0'}],
+                        'fields': [{'name': 'id', 'unique': true}, {'name': 'state', 'default': 'a'}, 'title', 'laststarttime', {'name': 'duration', 'default': '0'}, 'notes'],
                         'initialRecords': [ { 'id': 'idle', 'state': 'a', 'title': 'Idle', 'duration': '0' } ]
                     },
                     {
@@ -51,7 +51,8 @@
                         } 
                     },
                     { 'text': 'Backup', 'action': function(){ self.backup(); } },
-                    { 'text': 'Restore', 'action': function(){ self.restore(); } }
+                    { 'text': 'Restore', 'action': function(){ self.restore(); } },
+                    { 'text': 'DB Version', 'action': function() { self.dbVersion(); } }
                 ],
                 'position':{
                     'use': 'top',
@@ -413,6 +414,15 @@
             var self = this;
             console.log('reset');
             self.DB.reset();
+        }
+
+        TimeTracker.prototype.dbVersion = function(){
+            var self = this;
+            self.DB.tableAsJSON('version').then(
+                function(data){
+                    alert(JSON.stringify(data));
+                }
+            );
         }
 
         TimeTracker.prototype.preferences = function(){
