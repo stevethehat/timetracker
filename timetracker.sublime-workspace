@@ -1,0 +1,554 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"row",
+				"rows"
+			],
+			[
+				"table",
+				"tablesAsJSON"
+			],
+			[
+				"ta",
+				"tablesAsJSON"
+			],
+			[
+				"pr",
+				"prototype"
+			],
+			[
+				"drop",
+				"dropBox"
+			],
+			[
+				"res",
+				"restore"
+			],
+			[
+				"tables",
+				"tablesProcessed"
+			],
+			[
+				"tab",
+				"tableAsJSON"
+			],
+			[
+				"drp",
+				"dropBoxClient"
+			],
+			[
+				"tabe",
+				"tableDefinition"
+			],
+			[
+				"ex",
+				"executeSql"
+			],
+			[
+				"Drop",
+				"DropBoxHelper"
+			],
+			[
+				"field",
+				"fieldDetails"
+			],
+			[
+				"lo",
+				"log"
+			],
+			[
+				"fiel",
+				"fieldTypeOf"
+			],
+			[
+				"ini",
+				"initTables"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"sec",
+				"seconds"
+			],
+			[
+				"pre",
+				"previousTaskDuration"
+			],
+			[
+				"task",
+				"taskduration"
+			],
+			[
+				"len",
+				"length"
+			],
+			[
+				"loa",
+				"logTable"
+			],
+			[
+				"tas",
+				"taskID"
+			],
+			[
+				"p",
+				"padding"
+			],
+			[
+				"upload",
+				"uploadFile"
+			],
+			[
+				"up",
+				"uploadFile"
+			],
+			[
+				"s",
+				"siblings"
+			],
+			[
+				"font",
+				"font-weight"
+			],
+			[
+				"borde",
+				"border-top"
+			],
+			[
+				"bor",
+				"border-top"
+			],
+			[
+				"log",
+				"logTable"
+			],
+			[
+				"op",
+				"opacity"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"menu",
+				"menuDefinition"
+			],
+			[
+				"new",
+				"newOption"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"is",
+				"isRunningAsApp"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"Dro",
+				"DroidDB_openDatabase"
+			],
+			[
+				"ma",
+				"margin-top"
+			],
+			[
+				"addta",
+				"addTaskToList"
+			],
+			[
+				"clien",
+				"clientsSelector"
+			],
+			[
+				"time",
+				"timeTracker"
+			],
+			[
+				"a",
+				"addEvent"
+			],
+			[
+				"add",
+				"addTaskToList"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
+				"te",
+				"text-decoration"
+			],
+			[
+				"b",
+				"background"
+			],
+			[
+				"fo",
+				"font-weight"
+			],
+			[
+				"ba",
+				"background-color"
+			],
+			[
+				"li",
+				"list-style"
+			],
+			[
+				"pa",
+				"parseXML"
+			],
+			[
+				"xml",
+				"xml2bf"
+			],
+			[
+				"st",
+				"startTime"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "assets/www/js/ui.js",
+			"settings":
+			{
+				"buffer_size": 5453,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assets/www/js/timetracker.js",
+			"settings":
+			{
+				"buffer_size": 17643,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assets/www/js/db.js",
+			"settings":
+			{
+				"buffer_size": 10157,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"to",
+				"Show TODOs: Open files only"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: List Packages"
+			],
+			[
+				"op",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 467.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/steve.lamb/Development/Clients/LV/c5/Sites/continuity/core/nodetypes/web/page/page.nodeeditor",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/css/timetracker.css",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/index-web.html",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/index.html",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/dropboxhelper.js",
+		"/Users/steve.lamb/Development/personal/timetracker/AndroidManifest.xml",
+		"/Users/steve.lamb/Development/personal/font-awesome-to-png.py",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/css/font-awesome.min.css",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/moment.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/dropbox.js",
+		"/Users/steve.lamb/Development/personal/timetracker/res/xml/config.xml",
+		"/Users/steve.lamb/Development/personal/timetracker/src/com/webintent/emailcomposer/emailcomposer.java",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/css/jqm-icon-pack-2.0-original.css",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/underscore.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/cordova_plugins.json",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/underscorestring.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/cordova-2.7.0.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/index.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/js/SQLitePlugin.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/cordova-2.6.0.js",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/css/reset.css",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/reset.html",
+		"/Users/steve.lamb/Development/personal/timetracker/assets/www/manageClients.html",
+		"/Users/steve.lamb/Development/personal/hangman/android/assets/www/index.html",
+		"/Users/steve.lamb/Development/personal/podplayer/assets/www/js/badgerfish/src/main/javascript/nl/agentsatwork/badgerfish/Badgerfish.js",
+		"/Users/steve.lamb/Development/personal/podplayer/assets/www/js/badgerfish.js",
+		"/Users/steve.lamb/Development/personal/podplayer/assets/www/js/badgerfish/pom.xml",
+		"/Users/steve.lamb/Development/personal/podplayer/assets/www/js/badgerfish/README.txt",
+		"/Users/steve.lamb/Development/personal/hangman/android/copyfiles.sh",
+		"/Users/steve.lamb/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/steve.lamb/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/steve.lamb/Development/personal/hangman/android/assets/www/js/jquery-2.0.0.js",
+		"/Users/steve.lamb/Development/personal/hangman/android/assets/www/js/index.js",
+		"/Users/steve.lamb/Development/personal/hangman/android/assets/www/js/draw.js",
+		"/Users/steve.lamb/Development/personal/hangman/android/assets/www/draw.html",
+		"/Users/steve.lamb/Development/Clients/LV/c5/Continuity/handlers/JSONWebServiceHandler.cs",
+		"/Users/steve.lamb/Development/ios/test/www/js/draw.js",
+		"/Users/steve.lamb/Development/Clients/LV/c5/Frontend/handlers/Site.cs"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"execute",
+			"logTable",
+			".database",
+			"transaction",
+			"self.db",
+			"insert",
+			"isApp",
+			"':[]\n",
+			"addTaskTo",
+			"addTaskTp",
+			"img/",
+			"images/",
+			"black",
+			"');\n",
+			"exports",
+			"droiddb_",
+			"alert",
+			"droiddb_",
+			"deviceReady",
+			"device",
+			"DroidDB",
+			"TaskTracket"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"images/",
+			"img/",
+			"TimeTracker"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "assets/www/js/ui.js",
+					"settings":
+					{
+						"buffer_size": 5453,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2686,
+								3074
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1124.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "assets/www/js/timetracker.js",
+					"settings":
+					{
+						"buffer_size": 17643,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2768,
+								2768
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 408.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "assets/www/js/db.js",
+					"settings":
+					{
+						"buffer_size": 10157,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								530,
+								530
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"AndroidManifest.xml"
+			],
+			[
+				"in",
+				"android/assets/www/index.html"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 216.0,
+	"status_bar_visible": true
+}
