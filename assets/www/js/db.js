@@ -8,6 +8,8 @@
         DB.prototype.init = function (definition) {
             var self = this;     
             self.definition = definition;
+            var d = $.Deferred();
+
             self.db = window.openDatabase(definition.name, definition.version, definition.description, definition.size);
 
             // check version
@@ -23,10 +25,15 @@
 
                     if(currentDefinition != JSON.stringify(self.definition)){
                         console.log('Update DB');
-                        self.initTables();
+                        $.when(self.initTables()).then(
+                            function(){
+                                d.resolve(null);
+                            }
+                        );
                     }
                 }
             );
+            return(d);
         };
 
         DB.prototype.reset = function(){
@@ -81,6 +88,7 @@
         DB.prototype.initTables = function(){
             var self = this;
             var promises = [];
+            var d = $.Deferred();
 
             console.log('init versions table');
             promises.push(self.initTable(
@@ -106,10 +114,13 @@
                                 nextVersion = Number(results.rows.item(0).version) + 1;
                             }
                             self.execute('insert into version (version, definition) values (?, ?)', [nextVersion, JSON.stringify(self.definition)]);
+
+                            d.resolve(null);
                         }
                     );
                 }
-            );            
+            );    
+            return(d);        
         }
 
         DB.prototype.initTable = function(definition){
@@ -268,7 +279,52 @@
         DB.prototype.restore = function(data){
             var self = this;
             this.reset();
-            this.initTables();
+            this.initTables().then(
+                function(){
+                    console.log('DB.restore');
+                    console.log(data);
+
+                    $.each(_.keys(data),
+                        function(index, tableKey){
+                            console.log('restore table');
+                            var tableData = data[tableKey];
+                            console.log(tableData);
+                            self.restoreTable(tableData);
+                        }
+                    );
+                }
+            );
+        }
+
+        DB.prototype.restoreTable = function(data){
+            var self = this;
+            var name = data.definition.name;
+
+            console.log('restoring ' + name);
+            console.log(data.results);
+
+            $.each(data.results,
+                function(index, record){
+                    var fields = '';
+                    var values = '';
+                    console.log(record);
+                    var params = [];
+                    var recordFields = _.keys(record);
+                    $.each(recordFields,
+                        function(fieldIndex, fieldName){
+                            var field = record[fieldName];
+                            fields = fields + ' ' + fieldName;
+                            values = values + ' ? ';
+                            if(fieldIndex < recordFields.length -1){
+                                fields = fields + ', ';
+                                values = values + ', ';
+                            }
+                            params.push(record[fieldName]);
+                        }
+                    );
+                    self.execute('insert or replace into ' + name + ' (' + fields + ') values (' + values + ')', params);
+                }
+            );
         }
        
         DB.prototype.isApp = function(){
