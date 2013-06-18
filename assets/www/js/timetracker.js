@@ -325,7 +325,7 @@
                 function(dropBox){
                     $.when(dropBox.downloadFile('timetracker-backup.json')).done(
                         function(data){
-                            alert(data);
+                            self.DB.restore(JSON.parse(data));
                         }
                     ).fail(
                         function(){
