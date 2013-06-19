@@ -80,6 +80,7 @@
             self.DB.transaction(function (transaction) {
                 console.log('init');
                 //self.initTables(transaction);
+                self.checkLastAction(transaction);
             });
            self.showHome();
         };
@@ -88,6 +89,44 @@
             var self = this;
             self.home = null;
         };
+
+        TimeTracker.prototype.checkLastAction = function(transaction){
+            var self = this;
+
+            transaction.executeSql('select * from events order by starttime desc limit 1', [], 
+                function (transaction, results) {
+                    if(results.rows.length == 1){
+                        var lastStartTime = results.rows.item(0).starttime;
+                        console.log('last event start time = ' + lastStartTime);
+                        
+                        var startTime = moment.unix(lastStartTime);
+                        console.log(startTime);
+
+                        var now = moment();
+                        if(now.dayOfYear() != startTime.dayOfYear()){
+                            var sensibleEndTime = startTime.clone().hour(17).minute(30).second(0);
+                            var sensibleQuestionTime = startTime.clone().hour(1).minute(0);
+
+                            console.log('sensibleEndTime');
+                            console.log(sensibleEndTime);
+
+                            console.log('sensibleQuestionTime');
+                            console.log(sensibleQuestionTime);
+                            self.ui.confirm('The last event was started ' + startTime.from(now) + ', do you want to pause this task at 5:30 ' + sensibleQuestionTime.from(now.hour(1).minute(0)) + ' (' + sensibleQuestionTime.format('Do MMM') + ')', 'title',
+                                function(ok){
+                                    var endTime = startTime.clone();
+                                }
+                            );
+                        } else {
+                            alert('here 2');
+
+                        }
+                    } else {
+                        console.log('no active task found');
+                    }
+                }
+            );            
+        }
 
         TimeTracker.prototype.showHome = function(transaction){
             var self = this;
@@ -186,7 +225,7 @@
             var nowUnix = now.unix();
 
             self.ui.vibrate();
-            self.addEvent(taskID, nowUnix);
+            self.addEvent(taskID, nowUnix, nowUnix);
 
             var taskDuration = Number(li.data('taskDuration'));
 
@@ -220,9 +259,38 @@
             //
         }
 
-        TimeTracker.prototype.addEvent = function(taskID, nowUnix){
+        TimeTracker.prototype.endCurrentEvent = function(transaction, end){
+            var self = this;
+
+            transaction.executeSql('select * from events order by starttime desc', [],
+                function(transactioaddn, results){
+                    // get last event
+                    if(results.rows.length >= 2){
+                        var lastEvent = results.rows.item(1);
+                        var starttime = lastEvent.starttime;
+                        var duration = endUnix - Number(starttime);
+                        var eventID = lastEvent.id;
+                        var lastTaskID = lastEvent.taskid;
+
+                        transaction.executeSql('update events set endtime=?, duration=? where id=?', [endUnix, duration, eventID],
+                            function(transaction, results){
+                                transaction.executeSql('update tasks set duration = duration + ? where id=?', [duration, lastTaskID],
+                                    function(transaction, results){
+                                        console.log('task duration update');
+                                        console.log(results);
+                                    }
+                                );
+                            }
+                        );
+                    }
+                }
+            );
+        }
+
+        TimeTracker.prototype.addEvent = function(taskID, nowUnix, lastEnd){
             var self = this;
             console.log('addEvent ' + taskID);
+
             self.DB.transaction(
                 function(transaction){
                     transaction.executeSql('insert into events (id, taskid, starttime) values (?, ?, ?)', [self.generateGUID(), taskID, nowUnix],
@@ -232,29 +300,7 @@
 
                             transaction.executeSql('update tasks set laststarttime=? where id=?', [nowUnix, taskID],
                                 function(transaction, results){
-                                    transaction.executeSql('select * from events order by starttime desc', [],
-                                        function(transaction, results){
-                                            // get last event
-                                            if(results.rows.length >= 2){
-                                                var lastEvent = results.rows.item(1);
-                                                var starttime = lastEvent.starttime;
-                                                var duration = nowUnix - Number(starttime);
-                                                var eventID = lastEvent.id;
-                                                var lastTaskID = lastEvent.taskid;
-
-                                                transaction.executeSql('update events set endtime=?, duration=? where id=?', [nowUnix, duration, eventID],
-                                                    function(transaction, results){
-                                                        transaction.executeSql('update tasks set duration = duration + ? where id=?', [duration, lastTaskID],
-                                                            function(transaction, results){
-                                                                console.log('task duration update');
-                                                                console.log(results);
-                                                            }
-                                                        );
-                                                    }
-                                                );
-                                            }
-                                        }
-                                    );
+                                    self.endCurrentEvent(transaction, lastEnd);
                                 }
                             );
                         }
