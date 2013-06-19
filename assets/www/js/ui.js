@@ -129,7 +129,7 @@
                     }, title
                 );
             } else {
-                callback(true);
+                callback(confirm(message));
             }
         }
 
