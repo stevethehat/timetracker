@@ -97,6 +97,7 @@
                 function (transaction, results) {
                     if(results.rows.length == 1){
                         var lastStartTime = results.rows.item(0).starttime;
+                        var taskID = results.rows.item(0).taskid;
                         console.log('last event start time = ' + lastStartTime);
                         
                         var startTime = moment.unix(lastStartTime);
@@ -114,7 +115,8 @@
                             console.log(sensibleQuestionTime);
                             self.ui.confirm('The last event was started ' + startTime.from(now) + ', do you want to pause this task at 5:30 ' + sensibleQuestionTime.from(now.hour(1).minute(0)) + ' (' + sensibleQuestionTime.format('Do MMM') + ')', 'title',
                                 function(ok){
-                                    var endTime = startTime.clone();
+                                    var endTime = startTime.clone().hour(17).minute(30);
+                                    self.addEvent(taskID, moment().unix(), endTime);
                                 }
                             );
                         } else {
@@ -259,7 +261,7 @@
             //
         }
 
-        TimeTracker.prototype.endCurrentEvent = function(transaction, end){
+        TimeTracker.prototype.endCurrentEvent = function(transaction, endUnix){
             var self = this;
 
             transaction.executeSql('select * from events order by starttime desc', [],
