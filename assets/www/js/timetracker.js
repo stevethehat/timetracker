@@ -462,6 +462,7 @@
             var self = this;
             console.log('reset');
             self.DB.reset();
+            self.DB.initTables();
         }
 
         TimeTracker.prototype.dbVersion = function(){
