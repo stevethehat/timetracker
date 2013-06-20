@@ -42,7 +42,11 @@
                             self.ui.confirm('Are you sure you want to reset? This will delete all tasks & events.', 'Reset', 
                                 function(ok){
                                     if(ok){
-                                        self.reset(); location.reload(); 
+                                        self.reset().then(
+                                            function(){
+                                                location.reload(); 
+                                            }
+                                        ); 
                                     } else {
 
                                     }
@@ -51,7 +55,15 @@
                         } 
                     },
                     { 'text': 'Backup', 'action': function(){ self.backup(); } },
-                    { 'text': 'Restore', 'action': function(){ self.restore(); } },
+                    { 'text': 'Restore', 'action': 
+                        function(){ 
+                            self.restore().then(
+                                function(){
+                                    //location.reload(); 
+                                }
+                            ); 
+                        } 
+                    },
                     { 'text': 'DB Version', 'action': function() { self.dbVersion(); } }
                 ],
                 'position':{
@@ -81,8 +93,8 @@
                 console.log('init');
                 //self.initTables(transaction);
                 self.checkLastAction(transaction);
+                self.showHome();
             });
-           self.showHome();
         };
 
         TimeTracker.prototype.clearPages = function(){
@@ -368,24 +380,30 @@
 
         TimeTracker.prototype.restore = function(){
             var self = this;
+            var d = $.Deferred();
 
             $.when(new DropBoxHelper().authenticate()).done(
                 function(dropBox){
                     $.when(dropBox.downloadFile('timetracker-backup.json')).done(
                         function(data){
-                            self.DB.restore(JSON.parse(data));
+                            self.DB.restore(JSON.parse(data)).then(
+                                function(){
+                                    d.resolve(true);
+                                }
+                            );
                         }
                     ).fail(
                         function(){
-
+                            d.resolve(false);
                         }
                     );
                 }
             ).fail(
                 function(){
-
+                    d.resolve(false);
                 }
             );
+            return(d);
         }
 
         TimeTracker.prototype.sync = function(){

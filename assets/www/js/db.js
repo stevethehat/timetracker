@@ -278,6 +278,9 @@
 
         DB.prototype.restore = function(data){
             var self = this;
+            var d = $.Deferred();
+            var tables = [];
+
             this.reset();
             this.initTables().then(
                 function(){
@@ -289,16 +292,25 @@
                             console.log('restore table');
                             var tableData = data[tableKey];
                             console.log(tableData);
-                            self.restoreTable(tableData);
+                            tables.push(self.restoreTable(tableData));
                         }
                     );
                 }
             );
+
+            $.when(tables).then(
+                function(){
+                    d.resolve(true);
+                }
+            );
+            return(d);
         }
 
         DB.prototype.restoreTable = function(data){
             var self = this;
             var name = data.definition.name;
+            var d = $.Deferred();
+            var inserts = [];
 
             console.log('restoring ' + name);
             console.log(data.results);
@@ -322,9 +334,16 @@
                             params.push(record[fieldName]);
                         }
                     );
-                    self.execute('insert or replace into ' + name + ' (' + fields + ') values (' + values + ')', params);
+                    inserts.push(self.execute('insert or replace into ' + name + ' (' + fields + ') values (' + values + ')', params));
                 }
             );
+            $.when(inserts).then(
+                function(){
+                    d.resolve(true);
+                }
+            );
+
+            return(d);
         }
        
         DB.prototype.isApp = function(){
