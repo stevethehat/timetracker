@@ -64,7 +64,8 @@
                             ); 
                         } 
                     },
-                    { 'text': 'DB Version', 'action': function() { self.dbVersion(); } }
+                    { 'text': 'DB Version', 'action': function() { self.dbVersion(); } },
+                    { 'text': 'Refresh', 'action': function() { self.showHome(); } }
                 ],
                 'position':{
                     'use': 'top',
@@ -128,7 +129,7 @@
                             self.ui.confirm('The last event was started ' + startTime.from(now) + ', do you want to pause this task at 5:30 ' + sensibleQuestionTime.from(now.hour(1).minute(0)) + ' (' + sensibleQuestionTime.format('Do MMM') + ')', 'title',
                                 function(ok){
                                     var endTime = startTime.clone().hour(17).minute(30);
-                                    self.addEvent(taskID, moment().unix(), endTime);
+                                    self.addEvent(taskID, moment().unix(), endTime.unix());
                                 }
                             );
                         } else {
