@@ -330,7 +330,7 @@
 
             var newOption = self.ui.addOption(
                 {
-                    'text': taskName,
+                    'text': taskName + '<br/>' + moment.duration(duration, 'seconds').humanize(),
                     'position': position,
                     'data': {
                         'taskID': taskID,
